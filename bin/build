@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# $1 microservice folder
+# -p push to registry
+# -v to override image version
+# -f to force build on a dirty working tree
+
+# default options
+push=false
+version="latest"
+force=false
+no_cache=false
+
+current_gcloud_config_name=$(gcloud config configurations list | grep True | tr -s ' ' | cut -d' ' -f 1)
+
+function cleanup {
+    echo "Cleanup:"
+    echo "re-activating configuration $current_gcloud_config_name"
+    gcloud config configurations activate "$current_gcloud_config_name"
+
+    echo "deleting configuration ${docker_build_name}"
+    echo "Y" | gcloud config configurations delete ${docker_build_name}
+}
+
+# trap exit signal with a cleanup method that reactivates the initial gcloud configuration
+trap cleanup EXIT TERM KILL
+
+random_postfix=$(tr -dc a-z0-9 < /dev/urandom | head -c 20 | xargs)
+docker_build_name="docker-build-${random_postfix}"
+status=$(gcloud config configurations list | grep docker-build)
+if [ -n "$status" ]; then
+    # always recreate the configuration, to be safe when we push configuration changes
+
+    echo "activating configuration default"
+    gcloud config configurations activate default
+fi
+
+echo "creating configuration docker-build"
+gcloud config configurations create ${docker_build_name} --activate
+gcloud auth activate-service-account --key-file docker-build-google-keys.json
+gcloud config set project riddles-microservices
+gcloud config set compute/zone europe-west1-d
+
+# Use the short commit hash as version for the image
+lastCommit=`git rev-parse --short HEAD`
+version=${lastCommit}
+
+while [[ $# > 1 ]]
+do
+key="$1"
+case $key in
+    -p|--push)
+    push=true
+    ;;
+    -v|--version)
+    version="$2"
+    shift; # past argument
+    ;;
+    -f|--force)
+    force=true
+    ;;
+    --no-cache)
+    no_cache=true
+    ;;
+    *)
+    # unknown option
+    ;;
+esac
+shift
+done
+
+# Check if working copy is clean. This includes file that are:
+# 1. Untracked
+# 2. Modified and staged
+# 3. Modified and NOT staged
+# (--porcelain includes all three checks)
+# This is necessary to create a clean image with a meaningful versioning
+if [ -n "$(git status --porcelain)" ] && [ "$force" = false ]; then
+  echo "WARNING: there are changes on your working tree. For safety reasons you need a clean working tree to build the image";
+  exit 1
+fi
+
+if [[ $# < 1 ]] ; then
+    echo "First argument should be the microservice name"
+    exit 1
+fi
+
+# get the project name from the project config
+service="$1"
+project='riddles-microservices'
+tag1=gcr.io/$project/$service:$version
+tag2=gcr.io/$project/$service:latest
+
+echo "Building image for $service with tag $tag1"
+echo "Building image for $service with tag $tag2"
+echo "Pushing to gcr: $push"
+
+# -f: build from docker file
+# -t: with name
+if [ "$no_cache" = "true" ]; then
+    docker build --no-cache -f dockerfiles/$service/Dockerfile -t $tag1 -t $tag2 .
+else
+    docker build -f dockerfiles/$service/Dockerfile -t $tag1 -t $tag2 .
+fi
+
+if [ "$push" = false ]; then
+    exit
+fi
+
+if [ "$force" = true ]; then
+    echo "Warning: containers have not been pushed to gcloud due to using a forced build"
+    exit 1
+fi
+
+gcloud docker push $tag1
+gcloud docker push $tag2
