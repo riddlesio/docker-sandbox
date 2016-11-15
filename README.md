@@ -45,14 +45,20 @@ Note that you cannot publish a container which has been built using the
 force flag.
 
 ### Using the Docker image
-
-This container is not intended to be deployed. Instead, all Docker
-containers should inherit from the sandbox image. To do so, add the
-following line at the top of your Dockerfile:
-
+This docker image is used by the match-runner. It spins up this image
+each time a game needs to run. In the matchrunner configuration (.env
+locally or in a deployment on k8s) you need to make sure that the
+following variables are properly set:
 ```
-FROM gcr.io/riddles-microservices/sandbox:latest
+SANDBOX_CONTAINER_NAME=sandbox
+SANDBOX_CONTAINER_VERSION=df9eb17
 ```
+
+The sandbox container version is a docker image tag, which is based on
+the commit hash of the commit the image was built for.
+Instead of a commit hash you can also use ```latest```, but this is not
+recommended to use because when a new image will be pushed, you can no
+longer easily see that latest is now the previous version.
 
 ## Contributions
 
