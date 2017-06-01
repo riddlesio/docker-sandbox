@@ -24,7 +24,6 @@ RUN \
 
 # Install Python
 RUN apt-get -y install python3-pip
-RUN pip install numpy
 
 # Install Java
 ENV JAVA_JDK jdk1.8.0
