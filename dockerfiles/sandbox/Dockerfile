@@ -122,13 +122,20 @@ RUN cd /tmp && \
     rm /usr/bin/perl && \
     cp /usr/bin/perl$PERL_VERSION /usr/bin/perl
 
-## Install Pascal
-ENV PASCAL_VERSION 3.0.0
+# Install Pascal
+ENV PASCAL_VERSION 3.0.2
 RUN cd /tmp && \
-    wget "ftp://freepascal.stack.nl/pub/fpc/dist/$PASCAL_VERSION/i386-linux/fpc-$PASCAL_VERSION.i386-linux.tar" -O fpc-$PASCAL_VERSION.i386-linux.tar && \
-    tar -xvf fpc-$PASCAL_VERSION.i386-linux.tar && \
-    cd fpc-$PASCAL_VERSION.i386-linux && \
-    ./install.sh
+    wget "ftp://ftp.hu.freepascal.org/pub/fpc/dist/${PASCAL_VERSION}/x86_64-linux/fpc-${PASCAL_VERSION}.x86_64-linux.tar" -O fpc.tar && \
+    tar xf "fpc.tar" && \
+    cd "fpc-${PASCAL_VERSION}.x86_64-linux" && \
+    rm demo* doc* && \
+    ./install.sh && \
+    find "/usr/lib/fpc/${PASCAL_VERSION}/units/x86_64-linux/" -type d -mindepth 1 -maxdepth 1 \
+        -not -name 'fcl-base' \
+        -not -name 'rtl' \
+        -not -name 'rtl-console' \
+        -not -name 'rtl-objpas' \
+        -exec rm -r {} \;
 
 # Install Go
 # https://github.com/docker-library/golang/blob/64b88dc3e9d83e71eafc000fed1f0d5e289b3e65/1.8/Dockerfile
