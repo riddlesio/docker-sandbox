@@ -4,7 +4,7 @@ FROM gcr.io/riddles-microservices/base:latest
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    software-properties-common wget make curl bzip2 libc6-dev pkg-config unzip \
+    software-properties-common wget make curl bzip2 libc6-dev pkg-config unzip cmake openssl libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Locale should be the same for matchrunner and sandbox
@@ -183,13 +183,36 @@ RUN apt-get install -y patch ocaml
 ENV KOTLIN_VERSION=1.1.2-2
 ENV KOTLIN_HOME=/usr/local/kotlin
 RUN cd /tmp && \
-    wget -k "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip"  && \
+    wget -k "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip" && \
     unzip "kotlin-compiler-${KOTLIN_VERSION}.zip" && \
     mkdir -p "${KOTLIN_HOME}" && \
     mv "/tmp/kotlinc/bin" "/tmp/kotlinc/lib" "${KOTLIN_HOME}" && \
     rm ${KOTLIN_HOME}/bin/*.bat && \
     chmod +x ${KOTLIN_HOME}/bin/* && \
     ln -s "${KOTLIN_HOME}/bin/"* "/usr/bin/"
+
+ENV RUST_VERSION=1.18.0
+ENV RUST_ARCHIVE=rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+ENV RUST_DOWNLOAD_URL=https://static.rust-lang.org/dist/${RUST_ARCHIVE}
+RUN mkdir -p /rust && \
+    cd /rust && \
+    curl -fsOSL $RUST_DOWNLOAD_URL && \
+    curl -s $RUST_DOWNLOAD_URL.sha256 | sha256sum -c - && \
+    tar -C /rust -xzf $RUST_ARCHIVE --strip-components=1 && \
+    rm $RUST_ARCHIVE && \
+    ./install.sh
+ENV PATH $PATH:/root/.cargo/bin
+# this part is for adding some (offline) packages
+RUN cargo install cargo-local-registry
+ENV USER root
+RUN cd /tmp && \
+    cargo new depdummy && \
+    cd depdummy && \
+    printf 'libc = "0.2.26"\nrand = "0.3.15"' >> Cargo.toml && \
+    cargo build && \
+    cargo local-registry --sync Cargo.lock /root/.cargo/bin && \
+    printf "[source.crates-io]\nregistry = 'https://github.com/rust-lang/crates.io-index'\nreplace-with = 'local-registry'\n\n[source.local-registry]\nlocal-registry = '/root/.cargo/bin'" >> /root/.cargo/config && \
+    cd /tmp && rm -rf depdummy
 
 ## Install Elixir (doesn't seem to work anymore)
 #ENV ELIXIR_VERSION 1.2.6
@@ -205,16 +228,6 @@ RUN cd /tmp && \
 #    apt-get install -y elixir=$ELIXIR_VERSION*
 #RUN mix local.hex --force && \
 #    mix local.rebar --force
-#
-## Install Rust (this is working, but we are not supporting rust at the moment)
-#ENV RUST_VERSION 1.9.0
-#RUN \
-#    curl -sO "https://static.rust-lang.org/dist/rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz" && \
-#    tar -xzf rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz && \
-#    ./rust-$RUST_VERSION-x86_64-unknown-linux-gnu/install.sh --without=rust-docs && \
-#    rm -rf \
-#        rust-$RUST_VERSION-x86_64-unknown-linux-gnu \
-#        rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz
 
 # Cleanup
 RUN rm -rf /tmp/*
