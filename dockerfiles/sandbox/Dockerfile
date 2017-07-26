@@ -187,7 +187,7 @@ RUN cd /tmp && \
     rm -rf LuaJIT-$LUA_VERSION.tar.gz LuaJIT-$LUA_VERSION
 
 # Install Perl
-ENV PERL_VERSION 5.24.2
+ENV PERL_VERSION 5.24.0
 RUN cd /tmp && \
     curl -SL "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/perl-$PERL_VERSION.tar.bz2" -o perl-$PERL_VERSION.tar.bz2 && \
     tar -xjf perl-$PERL_VERSION.tar.bz2 && \
