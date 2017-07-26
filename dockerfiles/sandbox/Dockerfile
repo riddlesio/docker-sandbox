@@ -4,7 +4,11 @@ FROM gcr.io/riddles-microservices/base:latest
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    software-properties-common wget make curl bzip2 libc6-dev pkg-config unzip cmake openssl libssl-dev \
+    gnupg2 dirmngr software-properties-common wget make curl bzip2 libc6-dev pkg-config unzip cmake \
+    \
+#   rust stuff
+    openssl libssl-dev \
+    \
     && rm -rf /var/lib/apt/lists/*
 
 # Locale should be the same for matchrunner and sandbox
@@ -16,14 +20,81 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # Install C/C++
+ENV GCC_VERSION 7.1
+ENV GCC_MAJOR 7
 RUN \
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    add-apt-repository -y ppa:jonathonf/gcc-$GCC_VERSION && \
     apt-get update && \
-    apt-get install -y gcc-5 g++-5 && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+    apt-get install -y gcc-$GCC_MAJOR g++-$GCC_MAJOR && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$GCC_MAJOR 60 --slave /usr/bin/g++ g++ /usr/bin/g++-$GCC_MAJOR
 
-# Install Python
-RUN apt-get -y install python3-pip
+# Install Python (https://github.com/docker-library/python/blob/88ba87d31a3033d4dbefecf44ce25aa1b69ab3e5/3.5/Dockerfile)
+ENV PYTHON_VERSION 3.5.3
+ENV PYTHON_PIP_VERSION 9.0.1
+ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
+RUN set -ex \
+    && buildDeps=' \
+        dpkg-dev \
+        tcl-dev \
+        tk-dev \
+    ' \
+    && apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+    \
+    && wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
+    && wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
+    && export GNUPGHOME="$(mktemp -d)" \
+    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
+    && gpg --batch --verify python.tar.xz.asc python.tar.xz \
+    && rm -rf "$GNUPGHOME" python.tar.xz.asc \
+    && mkdir -p /usr/src/python \
+    && tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
+    && rm python.tar.xz \
+    \
+    && cd /usr/src/python \
+    && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
+    && ./configure \
+        --build="$gnuArch" \
+        --enable-loadable-sqlite-extensions \
+        --enable-shared \
+        --with-system-expat \
+        --with-system-ffi \
+        --without-ensurepip \
+    && make -j "$(nproc)" \
+    && make install \
+    && ldconfig \
+    \
+    && apt-get purge -y --auto-remove $buildDeps \
+    \
+    && find /usr/local -depth \
+        \( \
+            \( -type d -a -name test -o -name tests \) \
+            -o \
+            \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+        \) -exec rm -rf '{}' + \
+    && rm -rf /usr/src/python
+RUN cd /usr/local/bin \
+    && ln -s idle3 idle \
+    && ln -s pydoc3 pydoc \
+    && ln -s python3 python \
+    && ln -s python3-config python-config
+RUN set -ex; \
+    \
+    wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
+    \
+    python get-pip.py \
+        --disable-pip-version-check \
+        --no-cache-dir \
+        "pip==$PYTHON_PIP_VERSION" \
+    ; \
+    pip --version; \
+    \
+    find /usr/local -depth \
+        \( \
+            \( -type d -a -name test -o -name tests \) \
+            -o \
+            \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+        \) -exec rm -rf '{}' +; \
+    rm -f get-pip.py
 
 # Install Java
 ENV JAVA_JDK jdk1.8.0
@@ -44,27 +115,32 @@ RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2
     rm /usr/lib/jvm/$JAVA_JDK/javafx-src.zip
 
 # Install C#
+ENV MONO_VERSION 5.0.1.1
 RUN cd /tmp && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-    echo "deb http://download.mono-project.com/repo/debian wheezy main" | tee /etc/apt/sources.list.d/mono-xamarin.list && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
+    echo "deb http://download.mono-project.com/repo/debian jessie/snapshots/$MONO_VERSION main" > /etc/apt/sources.list.d/mono-official.list && \
     apt-get update && \
-    apt-get -y install mono-mcs
+    apt-get install -y binutils mono-devel ca-certificates-mono fsharp mono-vbnc nuget referenceassemblies-pcl
 
-## Install Javascript
+# Install Javascript
+ENV NODE_MAJOR 8
+# npm 4.1.2 needed for Reason installation. Latest 5.3.0 doesn't work for some reason
+ENV NPM_VERSION 4.1.2
 RUN cd /tmp && \
-    curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_$NODE_MAJOR.x | bash - && \
     apt-get install nodejs -y && \
-    npm install -g npm@latest
+    npm install -g npm@$NPM_VERSION
 
-## Install PHP
+# Install PHP
+ENV PHP_VERSION 7.0
 RUN cd /tmp && \
     add-apt-repository -y ppa:ondrej/php && \
     apt-get update && \
-    apt-get install -y --allow-unauthenticated php5.6
+    apt-get install -y --allow-unauthenticated php$PHP_VERSION
 
-## Install D
+# Install D
 ENV D_MAJOR 2.x
-ENV D_VERSION 2.071.0
+ENV D_VERSION 2.075.0
 RUN cd /tmp && \
     apt-get install -y --no-install-recommends xdg-utils libcurl3 && \
     wget "http://downloads.dlang.org/releases/$D_MAJOR/$D_VERSION/dmd_$D_VERSION-0_amd64.deb" -O dmd_$D_VERSION-0_amd64.deb && \
@@ -72,13 +148,13 @@ RUN cd /tmp && \
     apt-get install -f -y && \
     rm dmd_$D_VERSION-0_amd64.deb
 
-## Install Haskell
+# Install Haskell (no easy way to install specific version)
 RUN \
     apt-get install -y haskell-platform
 
-## Install Ruby
-ENV RB_MAJOR 2.3
-ENV RB_VERSION 2.3.1
+# Install Ruby
+ENV RB_MAJOR 2.4
+ENV RB_VERSION 2.4.1
 RUN cd /tmp && \
     wget "https://cache.ruby-lang.org/pub/ruby/$RB_MAJOR/ruby-$RB_VERSION.tar.gz" -O ruby-$RB_VERSION.tar.gz && \
     tar -xvzf ruby-*.tar.gz && \
@@ -89,8 +165,8 @@ RUN cd /tmp && \
     cd .. && \
     rm -rf ruby-$RB_VERSION.tar.gz ruby-$RB_VERSION/
 
-## Install Scala
-ENV SCALA_VERSION 2.11.8
+# Install Scala
+ENV SCALA_VERSION 2.12.0
 ENV SCALA_HOME /usr/lib
 RUN cd /tmp && \
     wget "http://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz" -O scala-$SCALA_VERSION.tgz && \
@@ -99,7 +175,7 @@ RUN cd /tmp && \
     rm scala-$SCALA_VERSION.tgz
 ENV PATH $SCALA_HOME/scala-$SCALA_VERSION/bin:$PATH
 
-## Install Lua
+# Install Lua
 ENV LUA_VERSION 2.0.4
 RUN cd /tmp && \
     wget "http://luajit.org/download/LuaJIT-$LUA_VERSION.tar.gz" -O LuaJIT-$LUA_VERSION.tar.gz && \
@@ -110,8 +186,8 @@ RUN cd /tmp && \
     cd .. && \
     rm -rf LuaJIT-$LUA_VERSION.tar.gz LuaJIT-$LUA_VERSION
 
-## Install Perl
-ENV PERL_VERSION 5.24.0
+# Install Perl
+ENV PERL_VERSION 5.24.2
 RUN cd /tmp && \
     curl -SL "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/perl-$PERL_VERSION.tar.bz2" -o perl-$PERL_VERSION.tar.bz2 && \
     tar -xjf perl-$PERL_VERSION.tar.bz2 && \
@@ -174,14 +250,19 @@ ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
-# Install OCaml (version is default ubuntu version)
-# TODO: use opam to build the latest version (takes a long time though)
-ENV OCAML_VERSION=4.02.3
-RUN apt-get install -y patch ocaml
+# Install OCaml
+ENV OCAML_VERSION 4.02.3
+RUN cd /tmp && \
+    apt-get install -y patch ocaml && \
+    wget 'https://raw.github.com/ocaml/opam/master/shell/opam_installer.sh' -O - | sh -s /usr/local/bin && \
+    opam init -a && \
+    opam switch $OCAML_VERSION && \
+    eval $(opam config env) && \
+    opam update
 
 # Install Kotlin
-ENV KOTLIN_VERSION=1.1.2-2
-ENV KOTLIN_HOME=/usr/local/kotlin
+ENV KOTLIN_VERSION 1.1.2-2
+ENV KOTLIN_HOME /usr/local/kotlin
 RUN cd /tmp && \
     wget -k "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip" && \
     unzip "kotlin-compiler-${KOTLIN_VERSION}.zip" && \
@@ -191,9 +272,10 @@ RUN cd /tmp && \
     chmod +x ${KOTLIN_HOME}/bin/* && \
     ln -s "${KOTLIN_HOME}/bin/"* "/usr/bin/"
 
-ENV RUST_VERSION=1.18.0
-ENV RUST_ARCHIVE=rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
-ENV RUST_DOWNLOAD_URL=https://static.rust-lang.org/dist/${RUST_ARCHIVE}
+# Install Rust
+ENV RUST_VERSION 1.18.0
+ENV RUST_ARCHIVE rust-${RUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+ENV RUST_DOWNLOAD_URL https://static.rust-lang.org/dist/${RUST_ARCHIVE}
 RUN mkdir -p /rust && \
     cd /rust && \
     curl -fsOSL $RUST_DOWNLOAD_URL && \
@@ -213,6 +295,10 @@ RUN cd /tmp && \
     cargo local-registry --sync Cargo.lock /root/.cargo/bin && \
     printf "[source.crates-io]\nregistry = 'https://github.com/rust-lang/crates.io-index'\nreplace-with = 'local-registry'\n\n[source.local-registry]\nlocal-registry = '/root/.cargo/bin'" >> /root/.cargo/config && \
     cd /tmp && rm -rf depdummy
+
+# Install Reason (opam required, see ocaml installation)
+ENV REASON_VERSION 1.13.6
+RUN npm install -g https://github.com/reasonml/reason-cli/archive/beta-v-$REASON_VERSION-bin-linux.tar.gz
 
 ## Install Elixir (doesn't seem to work anymore)
 #ENV ELIXIR_VERSION 1.2.6
