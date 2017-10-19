@@ -1,0 +1,46 @@
+version: 2
+microservices:
+  - name: sandbox-compiler-c
+  - name: sandbox-compiler-cpp
+  - name: sandbox-compiler-cs
+  - name: sandbox-compiler-d
+  - name: sandbox-compiler-elixir
+  - name: sandbox-compiler-go
+  - name: sandbox-compiler-haskell
+  - name: sandbox-compiler-java
+  - name: sandbox-compiler-javascript
+  - name: sandbox-compiler-kotlin
+  - name: sandbox-compiler-lua
+  - name: sandbox-compiler-ocaml
+  - name: sandbox-compiler-pascal
+  - name: sandbox-compiler-perl
+  - name: sandbox-compiler-php
+  - name: sandbox-compiler-python3
+  - name: sandbox-compiler-reason
+  - name: sandbox-compiler-ruby
+  - name: sandbox-compiler-rust
+  - name: sandbox-compiler-scala
+  - name: sandbox-runtime-c
+  - name: sandbox-runtime-cpp
+  - name: sandbox-runtime-cs
+  - name: sandbox-runtime-d
+  - name: sandbox-runtime-elixir
+  - name: sandbox-runtime-go
+  - name: sandbox-runtime-haskell
+  - name: sandbox-runtime-java
+  - name: sandbox-runtime-javascript
+  - name: sandbox-runtime-kotlin
+  - name: sandbox-runtime-lua
+  - name: sandbox-runtime-ocaml
+  - name: sandbox-runtime-pascal
+  - name: sandbox-runtime-perl
+  - name: sandbox-runtime-php
+  - name: sandbox-runtime-python3
+  - name: sandbox-runtime-reason
+  - name: sandbox-runtime-ruby
+  - name: sandbox-runtime-rust
+  - name: sandbox-runtime-scala
+environments: []
+image_repository:
+    project_id: riddles-microservices
+    google_keys_path: {{ DOCKER_IMAGE_REPOSITORY_CREDENTIALS_FILE }}
