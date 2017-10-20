@@ -12,7 +12,4 @@ if __name__ == '__main__':
         publish_microservice,
     ])
 
-    if args[0] == 'all':
-        jarvis.run(['publish all'])
-    else:
-        jarvis.run(['publish {}'.format(args[0])])
+    jarvis.run(['jarvis', 'publish', args[0]])
