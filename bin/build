@@ -1,6 +1,0 @@
-#! /usr/bin/env bash
-
-source bin/_shared
-ensureVirtualenv
-
-exec python3 scripts/build.py

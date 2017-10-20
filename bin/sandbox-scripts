@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+source bin/_shared.sh
+ensureVirtualenv
+
+exec python3 "$(pwd)/scripts/${1}.py" "${@:2}"

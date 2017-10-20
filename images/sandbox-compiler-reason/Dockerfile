@@ -4,6 +4,18 @@ FROM debian:stretch-slim
 
 ENV LANG C.UTF-8
 
+RUN set -ex; \
+	if ! command -v gpg > /dev/null; then \
+		apt-get update; \
+		apt-get install -y --no-install-recommends \
+			gnupg2 \
+			dirmngr \
+		; \
+		rm -rf /var/lib/apt/lists/*; \
+	fi
+
+
+
 ENV NODE_MAJOR 8
 # npm 4.1.2 needed for Reason installation. Latest 5.3.0 doesn't work for some reason
 ENV NPM_VERSION 4.1.2
