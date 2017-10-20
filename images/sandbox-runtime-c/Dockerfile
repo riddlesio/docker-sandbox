@@ -1,1 +1,1 @@
-FROM scratch
+FROM alpine:3.6
