@@ -83,4 +83,4 @@ microservices:
 environments: []
 image_repository:
     project_id: riddles-microservices
-    google_keys_path: "{{ DOCKER_IMAGE_REPOSITORY_CREDENTIALS_FILE }}"
+    google_keys_path: {{ DOCKER_IMAGE_REPOSITORY_CREDENTIALS_FILE }}
