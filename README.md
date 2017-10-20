@@ -1,64 +1,36 @@
-# Sandbox Docker Image
+# Sandbox Docker Images
 
-This repository contains the sandbox docker image used by all
-microservices.
+This repository contains the sandbox images used by the match runner. There is a compiler, as well as a runtime image
+for each supported programming language.
 
 ## Usage
 
-This guide assumes the user has the Google Cloud SDK with beta
-components and kubectl installed.
+This guide assumes the user has python3 with access to the Riddles.io pypi server as well as the Google Cloud SDK with
+beta components and kubectl installed.
 
-### Building the container
+### Building the containers
 
-To build the container, run following command:
-```
-bin/build sandbox
-```
+To build the containers, run following command:
 
-To build and override the image version tag:
 ```
-bin/build -v 1.0.9-RC1 sandbox
+bin/sandbox-scripts build
 ```
 
-To force a build on a dirty working tree:
+### Publishing one or all containers
+
+The script can also be used to publish the container to the Google Container Registry.
+
+Run the following command to build and publish a specific container:
+
 ```
-bin/build -f sandbox
-```
-
-All flags can be combined.
-
-### Publishing the container
-
-The build script can also be used to publish the container to the
-Google Container Registry.
-
-**Important:** make sure the gcloud project id is set to
-`riddles-microservices`, you won't be able to push the container
-otherwise.
-
-Run the following command to build and publish the container:
-```
-bin/build -p sandbox
+bin/sandbox-scripts publish <container_name>
 ```
 
-Note that you cannot publish a container which has been built using the
-force flag.
+In order to publish all containers, run the following command instead:
 
-### Using the Docker image
-This docker image is used by the match-runner. It spins up this image
-each time a game needs to run. In the matchrunner configuration (.env
-locally or in a deployment on k8s) you need to make sure that the
-following variables are properly set:
 ```
-SANDBOX_CONTAINER_NAME=sandbox
-SANDBOX_CONTAINER_VERSION=df9eb17
+bin/sandbox-scripts publish all
 ```
-
-The sandbox container version is a docker image tag, which is based on
-the commit hash of the commit the image was built for.
-Instead of a commit hash you can also use ```latest```, but this is not
-recommended to use because when a new image will be pushed, you can no
-longer easily see that latest is now the previous version.
 
 ## Contributions
 
