@@ -1,7 +1,7 @@
 import os
 
 import yaml
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, meta
 from riddles_util.invariant import invariant
 from src.steps.docker import docker_build, create_image_uri, docker_tag, docker_session, get_short_image_id
 
