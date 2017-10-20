@@ -1,6 +1,7 @@
 import os
 
 import yaml
+from jinja2 import Environment, FileSystemLoader
 from riddles_util.invariant import invariant
 from src.steps.docker import docker_build, create_image_uri, docker_tag, docker_session, get_short_image_id
 
@@ -12,6 +13,10 @@ from src.tasks.helpers import (
     get_image_repository_google_keys_path,
     get_image_repository_project_id,
     does_file_exist)
+
+
+def config_from_env(keys):
+    return {key: os.getenv(key) for key in keys if os.getenv(key)}
 
 
 def build_context():
@@ -34,8 +39,24 @@ def build_context():
 
 
 def load_project_configuration(config_path):
-    with open(config_path) as file:
-        return yaml.load(file)
+    jinja_env = Environment(
+        loader=FileSystemLoader(['.'])
+    )
+    config_path_basename = os.path.basename(config_path)
+    variable_keys = get_undeclared_variables(jinja_env, config_path_basename)
+
+    # foreach var lookup in env, gather undefined vars
+    env_config = config_from_env(variable_keys)
+
+    # if there are undefined vars, raise error and print that list
+    diff = set(variable_keys) - set(env_config.keys())
+    if diff:
+        raise RuntimeError("You need to define the environment variables: {}".format(diff))
+
+    template = jinja_env.get_template(config_path_basename)
+    rendered_config = template.render(**env_config)
+
+    return yaml.load(rendered_config)
 
 
 def build_image(image_name, project_id, google_keys_path):
@@ -79,6 +100,15 @@ def get_dockerfile_path(image_name):
     dockerfile_path = 'images/{}/Dockerfile'.format(image_name)
     invariant(does_file_exist(dockerfile_path), '{} does not exist or is empty'.format(dockerfile_path))
     return dockerfile_path
+
+
+def get_undeclared_variables(jinja_env, template_filename):
+    # get the template source and just parse it without substitution variables
+    template_source = jinja_env.loader.get_source(jinja_env, template_filename)
+    parsed_template = jinja_env.parse(template_source)
+
+    # find all undeclared variables
+    return list(set(meta.find_undeclared_variables(parsed_template)))
 
 
 if __name__ == '__main__':
