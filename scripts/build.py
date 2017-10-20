@@ -1,5 +1,4 @@
 import os
-import sys
 
 from riddles.invariant import invariant
 from riddles.jarvis.jarvis import Jarvis

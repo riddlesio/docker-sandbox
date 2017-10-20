@@ -8,6 +8,13 @@ for each supported programming language.
 This guide assumes the user has python3 with access to the Riddles.io pypi server as well as the Google Cloud SDK with
 beta components and kubectl installed.
 
+When running the scripts for the first time, ensure all dependencies are installed correctly by running the following 
+command:
+
+```
+pip install -r requirements/requirements.txt
+```
+
 ### Building the containers
 
 To build the containers, run following command:
