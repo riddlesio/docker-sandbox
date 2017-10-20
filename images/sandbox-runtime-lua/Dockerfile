@@ -1,4 +1,4 @@
-FROM gcr.io/testriddles/alpine-base:1.0
+FROM alpine:3.6
 
 ENV LUA_VERSION 5.3
 RUN apk update && \
