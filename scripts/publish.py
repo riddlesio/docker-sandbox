@@ -2,14 +2,14 @@
 
 import sys
 
-from src.jarvis import Jarvis
-from src.tasks.publish_microservice import publish_microservice
+from riddles.jarvis.jarvis import Jarvis
+from riddles.jarvis.tasks.publish_microservice import publish_microservice_latest
 
 if __name__ == '__main__':
     args = sys.argv[1::]
 
     jarvis = Jarvis([
-        publish_microservice,
+        publish_microservice_latest,
     ])
 
-    jarvis.run(['jarvis', 'publish', args[0]])
+    jarvis.run(['jarvis', 'publish', 'image', args[0]])
