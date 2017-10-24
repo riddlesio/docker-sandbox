@@ -16,3 +16,10 @@ RUN set -x && \
 	apk add --no-cache openjdk8="$JAVA_ALPINE_VERSION" && \
 	[ "$JAVA_HOME" = "$(docker-java-home)" ] && \
     rm -rf /var/cache/apk/*
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_java.sh /riddles/compile_java.sh
+
+CMD "/riddles/compile_java.sh"

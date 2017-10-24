@@ -22,3 +22,10 @@ RUN apk add --no-cache binutils libgcc && \
         -not -name 'rtl-console' \
         -not -name 'rtl-objpas' \
         -exec rm -r {} \;
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_pascal.sh /riddles/compile_pascal.sh
+
+CMD "/riddles/compile_pascal.sh"

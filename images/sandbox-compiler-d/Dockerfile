@@ -14,3 +14,10 @@ RUN cd /tmp && \
     apt-get install -f -y && \
     apt-get remove --purge -y wget && \
     rm dmd_$D_VERSION-0_amd64.deb
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_d.sh /riddles/compile_d.sh
+
+CMD "/riddles/compile_d.sh"

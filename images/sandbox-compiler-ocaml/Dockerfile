@@ -10,3 +10,10 @@ RUN apk update && \
     opam update && \
     apk del build-deps && \
     rm -rf /var/cache/apk/*
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_ocaml.sh /riddles/compile_ocaml.sh
+
+CMD "/riddles/compile_ocaml.sh"

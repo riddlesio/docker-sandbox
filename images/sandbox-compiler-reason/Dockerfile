@@ -45,3 +45,10 @@ RUN apt-get update && \
     # uninstall node & npm
     apt-get remove -y nodejs && \
     rm -rf /usr/lib/node_modules/npm /usr/lib/nodejs /usr/include/node /usr/include/nodejs /usr/bin/node /usr/bin/nodejs /tmp/*
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_reason.sh /riddles/compile_reason.sh
+
+CMD "/riddles/compile_reason.sh"

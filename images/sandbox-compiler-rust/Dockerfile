@@ -19,3 +19,10 @@ RUN cd tmp/ && \
     printf "[source.crates-io]\nregistry = 'https://github.com/rust-lang/crates.io-index'\nreplace-with = 'local-registry'\n\n[source.local-registry]\nlocal-registry = '/root/.cargo/bin'" >> /root/.cargo/config && \
     apk del build-deps && \
     rm -rf /tmp/depdummy /var/cache/apk/*
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_rust.sh /riddles/compile_rust.sh
+
+CMD "/riddles/compile_rust.sh"

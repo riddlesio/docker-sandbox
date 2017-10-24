@@ -13,3 +13,10 @@ RUN apk update && \
     ln -s "${KOTLIN_HOME}/bin/"* "/usr/bin/" && \
     apk del build-deps && \
     rm -rf /tmp/* /var/cache/apk/*
+
+RUN mkdir /riddles
+WORKDIR /riddles
+
+COPY compile_kotlin.sh /riddles/compile_kotlin.sh
+
+CMD "/riddles/compile_kotlin.sh"
