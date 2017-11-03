@@ -20,9 +20,10 @@ RUN cd tmp/ && \
     apk del build-deps && \
     rm -rf /tmp/depdummy /var/cache/apk/*
 
+RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
 COPY compile_rust.sh /riddles/compile_rust.sh
 
-CMD "/riddles/compile_rust.sh"
+CMD ["compile_rust.sh"]

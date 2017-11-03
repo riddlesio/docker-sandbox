@@ -34,9 +34,10 @@ RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
 	apk del .build-dependencies && \
 	rm -rf /tmp/* /var/cache/apk/*
 
+RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
 COPY compile_scala.sh /riddles/compile_scala.sh
 
-CMD "/riddles/compile_scala.sh"
+CMD ["compile_scala.sh"]

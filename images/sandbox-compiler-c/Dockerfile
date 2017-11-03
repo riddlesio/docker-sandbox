@@ -7,9 +7,10 @@ RUN apk update && \
     apk add --no-cache gcc=$GCC_VERSION musl-dev && \
     rm -rf /var/cache/apk/*
 
+RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
 COPY compile_c.sh /riddles/compile_c.sh
 
-CMD "/riddles/compile_c.sh"
+CMD ["compile_c.sh"]

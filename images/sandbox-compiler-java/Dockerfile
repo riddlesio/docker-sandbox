@@ -17,9 +17,10 @@ RUN set -x && \
 	[ "$JAVA_HOME" = "$(docker-java-home)" ] && \
     rm -rf /var/cache/apk/*
 
+RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
 COPY compile_java.sh /riddles/compile_java.sh
 
-CMD "/riddles/compile_java.sh"
+CMD ["compile_java.sh"]

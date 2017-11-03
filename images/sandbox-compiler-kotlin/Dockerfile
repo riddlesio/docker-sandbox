@@ -14,9 +14,10 @@ RUN apk update && \
     apk del build-deps && \
     rm -rf /tmp/* /var/cache/apk/*
 
+RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
 COPY compile_kotlin.sh /riddles/compile_kotlin.sh
 
-CMD "/riddles/compile_kotlin.sh"
+CMD ["compile_kotlin.sh"]

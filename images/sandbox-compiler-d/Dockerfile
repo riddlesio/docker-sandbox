@@ -15,9 +15,10 @@ RUN cd /tmp && \
     apt-get remove --purge -y wget && \
     rm dmd_$D_VERSION-0_amd64.deb
 
+RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
 COPY compile_d.sh /riddles/compile_d.sh
 
-CMD "/riddles/compile_d.sh"
+CMD ["/compile_d.sh"]
