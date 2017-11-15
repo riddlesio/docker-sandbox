@@ -1,5 +1,6 @@
 .idea
 .vscode
+reports
 
 ### OSX template
 *.DS_Store

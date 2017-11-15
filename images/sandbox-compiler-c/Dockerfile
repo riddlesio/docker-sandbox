@@ -11,6 +11,6 @@ RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
-COPY ./compile_c.sh /riddles/compile_c.sh
+COPY compile_c.sh /riddles/compile_c.sh
 
 CMD ["compile_c.sh"]
