@@ -1,6 +1,6 @@
 
 
-def create_docker_compiler_command(self, source_dir, bin_dir, image) -> str:
+def create_docker_compile_command(self, source_dir, bin_dir, image) -> str:
     source_dir_host_path = source_dir
     source_dir_mount_point = '/tmp/riddles/compiler/source'
 
