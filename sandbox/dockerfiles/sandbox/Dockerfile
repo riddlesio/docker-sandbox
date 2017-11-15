@@ -251,9 +251,10 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # Install OCaml
-ENV OCAML_VERSION 4.02.3
+ENV OCAML_VERSION 4.04.1
 RUN cd /tmp && \
-    apt-get install -y patch ocaml && \
+    apt-get update && \
+    apt-get install -y opam musl-dev && \
     wget 'https://raw.github.com/ocaml/opam/master/shell/opam_installer.sh' -O - | sh -s /usr/local/bin && \
     opam init -a && \
     opam switch $OCAML_VERSION && \
@@ -300,20 +301,20 @@ RUN cd /tmp && \
 ENV REASON_VERSION 1.13.6
 RUN npm install -g https://github.com/reasonml/reason-cli/archive/beta-v-$REASON_VERSION-bin-linux.tar.gz
 
-## Install Elixir (doesn't seem to work anymore)
-#ENV ELIXIR_VERSION 1.2.6
-#RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections  # See : https://github.com/phusion/baseimage-docker/issues/58
-#RUN echo "deb http://packages.erlang-solutions.com/ubuntu trusty contrib" >> /etc/apt/sources.list && \
-#    apt-key adv --fetch-keys http://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc && \
-#    apt-get -qq update && \
-#    apt-get install -y esl-erlang
-#RUN wget "https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb" && \
-#    dpkg -i erlang-solutions_1.0_all.deb && \
-#    rm erlang-solutions_1.0_all.deb && \
-#    apt-get update && \
-#    apt-get install -y elixir=$ELIXIR_VERSION*
-#RUN mix local.hex --force && \
-#    mix local.rebar --force
+# Install Elixir (doesn't seem to work anymore)
+ENV ELIXIR_VERSION 1.2.6
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections  # See : https://github.com/phusion/baseimage-docker/issues/58
+RUN echo "deb http://packages.erlang-solutions.com/ubuntu trusty contrib" >> /etc/apt/sources.list && \
+    apt-key adv --fetch-keys http://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc && \
+    apt-get -qq update && \
+    apt-get install -y esl-erlang
+RUN wget "https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb" && \
+    dpkg -i erlang-solutions_1.0_all.deb && \
+    rm erlang-solutions_1.0_all.deb && \
+    apt-get update && \
+    apt-get install -y elixir=$ELIXIR_VERSION*
+RUN mix local.hex --force && \
+    mix local.rebar --force
 
 # Cleanup
 RUN rm -rf /tmp/*
