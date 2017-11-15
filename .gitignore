@@ -1,4 +1,7 @@
 .idea
+.venv
+scripts
+test
 
 ### OSX template
 *.DS_Store
