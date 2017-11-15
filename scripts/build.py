@@ -31,11 +31,11 @@ def chdir(path):
 
 def build_image(image_name, project_id, google_keys_path):
     dockerfile_path = get_dockerfile_path(image_name)
-    image_dir = os.path.basename(dockerfile_path)
+    image_dir = os.path.dirname(dockerfile_path)
 
     with chdir(image_dir):
         with docker_session(google_keys_path):
-            build_result = docker_build(dockerfile_path=image_dir)
+            build_result = docker_build(dockerfile_path='./Dockerfile')
 
     invariant(build_result.returncode == 0, "build failed:\n{}".format(build_result.stderr.strip()))
     digest = get_step_output(build_result)
