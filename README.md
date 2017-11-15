@@ -39,6 +39,29 @@ In order to publish all containers, run the following command instead:
 bin/sandbox-scripts publish all
 ```
 
+### Running the test suite
+
+The test suite can be invoked through the following command:
+```
+bin/sandbox-scripts test
+```
+
+This runs the test suite in its intirety. Markers can be added if
+you want to run only a subset of tests. For instance, runnint the
+tests for the Java compiler can be done as follows:
+```
+bin/sandbox-scripts test java and compiler
+``` 
+
+Similarly, running tests for both the OCaml and Reason compilers
+and runtimes can be done as follows:
+```
+bin/sandbox-scripts test ocaml or reason
+```
+
+**Important**: Running the test suite requires that the sandbox
+images have been built and are available on your local machine.
+
 ## Contributions
 
 This repository uses the Github branching model with the following
