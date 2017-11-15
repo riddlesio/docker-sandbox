@@ -6,6 +6,7 @@ import shutil
 from util.subprocess import SubprocessRunner
 from util.temp_dir import temp_dir
 from util.test_utils import create_docker_compile_command
+from util.test_utils import compiler_image
 
 @pytest.mark.java
 @pytest.mark.compiler
@@ -24,7 +25,7 @@ def test_basic_compile():
         shutil.copyfile(os.path.join(module_dir, 'java_basic_compile_bot.java'), source_dir)
 
         # Step 2: Run the compiler and get the output
-        command = create_docker_compile_command(source_dir, bin_dir, '')
+        command = create_docker_compile_command(source_dir, bin_dir, compiler_image('java'))
         result = SubprocessRunner().run(command)
 
         assert result.return_code == 0

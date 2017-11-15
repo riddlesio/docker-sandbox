@@ -8,7 +8,7 @@ from util.temp_dir import temp_dir
 from util.test_utils import create_docker_compile_command
 from util.test_utils import compiler_image
 
-@pytest.mark.javascript3
+@pytest.mark.javascript
 @pytest.mark.compiler
 def test_basic_compile():
     module_dir = os.path.dirname(os.path.realpath(__file__))
@@ -22,13 +22,13 @@ def test_basic_compile():
         os.mkdir(source_dir)
         os.mkdir(bin_dir)
 
-        shutil.copyfile(os.path.join(module_dir, 'basic_compile_bot.js'), source_dir)
-
-        # Step 2: Get the image version for the latest commit
-        version = None
+        shutil.copyfile(
+            os.path.join(module_dir, 'basic_compile_bot.js'),
+            os.path.join(source_dir, 'basic_compile_bot.js')
+        )
 
         # Step 2: Run the compiler and get the output
-        command = create_docker_compile_command(source_dir, bin_dir, compiler_image('js', version))
+        command = create_docker_compile_command(source_dir, bin_dir, compiler_image('js'))
         result = SubprocessRunner().run(command)
 
         assert result.return_code == 0
