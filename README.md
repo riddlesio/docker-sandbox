@@ -6,45 +6,36 @@ microservices.
 ## Usage
 
 This guide assumes the user has the Google Cloud SDK with beta
-components and kubectl installed.
+components and kubectl, as well as Jarvis installed.
 
 ### Building the container
 
-To build the container, run following command:
+Jarvis is used to build the container. You can build the container
+by running the following command:
 ```
-bin/build sandbox
-```
-
-To build and override the image version tag:
-```
-bin/build -v 1.0.9-RC1 sandbox
+jarvis build image sandbox
 ```
 
 To force a build on a dirty working tree:
 ```
-bin/build -f sandbox
+jarvis force build image sandbox
 ```
-
-All flags can be combined.
 
 ### Publishing the container
 
-The build script can also be used to publish the container to the
+Jarvis can also be used to publish the container to the
 Google Container Registry.
 
-**Important:** make sure the gcloud project id is set to
-`riddles-microservices`, you won't be able to push the container
-otherwise.
-
-Run the following command to build and publish the container:
+Run the following command to publish the container:
 ```
-bin/build -p sandbox
+jarvis publish image sandbox
 ```
 
 Note that you cannot publish a container which has been built using the
 force flag.
 
 ### Using the Docker image
+
 This docker image is used by the match-runner. It spins up this image
 each time a game needs to run. In the matchrunner configuration (.env
 locally or in a deployment on k8s) you need to make sure that the
