@@ -1,0 +1,6 @@
+version: 1
+microservices:
+  - name: sandbox
+image_repository:
+    project_id: riddles-microservices
+    google_keys_path: {{ DOCKER_IMAGE_REPOSITORY_CREDENTIALS_FILE }}
