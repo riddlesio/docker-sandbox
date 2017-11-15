@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 
 from riddles.invariant import invariant
 from riddles.jarvis.jarvis import Jarvis
@@ -20,9 +21,22 @@ from riddles.jarvis.tasks.helpers import (
 )
 
 
+@contextmanager
+def chdir(path):
+    current_dir = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(current_dir)
+
+
 def build_image(image_name, project_id, google_keys_path):
-    with docker_session(google_keys_path):
-        build_result = docker_build(dockerfile_path=get_dockerfile_path(image_name))
+    dockerfile_path = get_dockerfile_path(image_name)
+    image_dir = os.path.basename(dockerfile_path)
+
+    with chdir(image_dir):
+        with docker_session(google_keys_path):
+            build_result = docker_build(dockerfile_path=image_dir)
+
     invariant(build_result.returncode == 0, "build failed:\n{}".format(build_result.stderr.strip()))
     digest = get_step_output(build_result)
     short_image_id = get_short_image_id(digest=digest)
