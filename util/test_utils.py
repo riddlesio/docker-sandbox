@@ -1,4 +1,12 @@
 
+def image(kind, language_shorthand, version):
+    return 'gcr.io/riddles-microservices/sandbox-{}-{}:{}'.format(kind, language_shorthand, version)
+
+def compiler_image(language_shorthand, version):
+    return image('compiler', language_shorthand, version)
+
+def runtime-image(language_shorthand, version):
+    return image('runtime', language_shorthand, version)
 
 def create_docker_compile_command(self, source_dir, bin_dir, image) -> str:
     source_dir_host_path = source_dir
@@ -28,5 +36,24 @@ def create_docker_compile_command(self, source_dir, bin_dir, image) -> str:
         image=image
     )
 
-def create_docker_runtime_command(self, bot_dir, image) -> str:
-    raise NotImplementedError()
+def create_docker_runtime_command(self, bot_dir, executable_filename, image) -> str:
+    bot_dir_host_path = bin_dir
+    bot_dir_mount_point = '/bot'
+
+    return (
+        'docker run '
+        '-c {cpu_shares} '
+        '-m {max_memory} '
+        # Mount bot_dir as read-only
+        '-v {bot_dir_host_path}:{bot_dir_mount_point}:ro '
+        '--net none '
+        '{image} '
+        '{bot_dir_mount_point}/{executable_filename}'
+    ).format(
+        bot_dir_host_path=bot_dir_host_path,
+        bot_dir_mount_point=bot_dir_mount_point,
+        cpu_shares=512,
+        executable_filename=executable_filename,
+        max_memory='200M',
+        image=image
+    )
