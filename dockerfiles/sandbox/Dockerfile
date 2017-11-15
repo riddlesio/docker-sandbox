@@ -1,4 +1,4 @@
-FROM gcr.io/riddles-microservices/base:latest
+FROM gcr.io/riddles-microservices/base:152e46c-cd3675d3cf07
 
 # initialize package cache to be able to install packages
 RUN \
@@ -115,7 +115,7 @@ RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2
     rm /usr/lib/jvm/$JAVA_JDK/javafx-src.zip
 
 # Install C#
-ENV MONO_VERSION 5.0.1.1
+ENV MONO_VERSION 5.4.1.6
 RUN cd /tmp && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
     echo "deb http://download.mono-project.com/repo/debian jessie/snapshots/$MONO_VERSION main" > /etc/apt/sources.list.d/mono-official.list && \
