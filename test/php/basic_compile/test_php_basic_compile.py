@@ -1,6 +1,7 @@
 import os
 import pytest
 import shutil
+from contextlib import contextmanager
 
 from util.subprocess import SubprocessRunner
 from util.temp_dir import temp_dir
@@ -9,9 +10,8 @@ from util.test_utils import compiler_image
 from util.test_utils import get_manifest_executable
 
 
-@pytest.mark.php
-@pytest.mark.compiler
-def test_php_basic_compile():
+@pytest.fixture(scope="module")
+def setup():
     module_dir = os.path.dirname(os.path.realpath(__file__))
 
     with temp_dir() as path:
@@ -32,14 +32,48 @@ def test_php_basic_compile():
         command = create_docker_compile_command(
             source_dir, bin_dir, compiler_image('php'))
         result = SubprocessRunner().run(command)
-        print(result.stdout)
-        print(result.stderr)
+        yield bin_dir, result
 
-        manifest_path = os.path.join(bin_dir, 'manifest')
-        assert result.return_code == 0
-        assert os.path.exists(manifest_path)
-        assert os.path.exists(os.path.join(bin_dir, 'basic_compile_bot.php'))
 
-        file_mode = os.stat(get_manifest_executable(
-            manifest_path, bin_dir)).st_mode
-        assert file_mode == 0o100755
+@pytest.mark.php
+@pytest.mark.compiler
+def test_succesful_return_code(setup):
+    _, result = setup
+    assert result.return_code == 0
+
+
+@pytest.mark.php
+@pytest.mark.compiler
+def test_creates_manifest(setup):
+    bin_dir, _ = setup
+    manifest_path = os.path.join(bin_dir, 'manifest')
+    assert os.path.exists(manifest_path)
+
+
+@pytest.mark.php
+@pytest.mark.compiler
+def test_creates_bot_executable(setup):
+    bin_dir, _ = setup
+    manifest_path = os.path.join(bin_dir, 'manifest')
+
+    assert os.path.exists(
+        get_manifest_executable(
+            manifest_path,
+            bin_dir,
+        )
+    )
+
+
+@pytest.mark.php
+@pytest.mark.compiler
+def test_executable_permissions(setup):
+    bin_dir, _ = setup
+    manifest_path = os.path.join(bin_dir, 'manifest')
+    file_mode = os.stat(
+        get_manifest_executable(
+            manifest_path,
+            bin_dir,
+        )
+    ).st_mode
+
+    assert file_mode == 0o100755
