@@ -8,12 +8,16 @@ for each supported programming language.
 This guide assumes the user has python3 with access to the Riddles.io pypi server as well as the Google Cloud SDK with
 beta components and kubectl installed.
 
-When running the scripts for the first time, ensure all dependencies are installed correctly by running the following 
+When running the scripts for the first time, ensure all dependencies are installed correctly by running the following
 command:
 
 ```
-pip install -r requirements/requirements.txt
+python3 -m venv ..venv
+source .venv/bin/activate
+pip3 install -r requirements/requirements.txt
 ```
+
+Next time you open your terminal, do not forget to activate your virtual environment by running `source .venv/bin/activate` after changing dir into docker-sandbox.
 
 ### Building the containers
 
@@ -51,7 +55,7 @@ you want to run only a subset of tests. For instance, runnint the
 tests for the Java compiler can be done as follows:
 ```
 bin/sandbox-scripts test java and compiler
-``` 
+```
 
 Similarly, running tests for both the OCaml and Reason compilers
 and runtimes can be done as follows:
