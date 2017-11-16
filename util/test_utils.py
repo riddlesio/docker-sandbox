@@ -1,3 +1,4 @@
+import os
 from riddles.jarvis.steps.docker import get_latest_tag_for_commit_hash
 from riddles.jarvis.steps.git import get_latest_commit_hash
 
@@ -70,3 +71,9 @@ def create_docker_runtime_command(self, bot_dir, executable_filename, image) -> 
         max_memory='200M',
         image=image
     )
+
+
+def get_manifest_executable(manifest_path, bin_dir):
+    with open(manifest_path) as manifest:
+        data = manifest.read()
+        return os.path.join(bin_dir, data.strip())
