@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
+set -e
 
 # Find the main class
-MAIN=`grep -lr --include '*.scala' 'def main' "$SOURCE_DIR"`
+MAIN=`find "$SOURCE_DIR" -name '*.scala' | xargs grep -lr 'def main'`
 
 if [ -z "$MAIN" ]
 then

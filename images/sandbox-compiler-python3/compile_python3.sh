@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
+set -e
 
 # Find the main class
-MAIN=`grep -lr --include '*.py' '__main__' "$SOURCE_DIR"`
+MAIN=`find "$SOURCE_DIR" -name '*.py' | xargs grep -lr '__main__'`
 
 if [ -z "$MAIN" ]
 then

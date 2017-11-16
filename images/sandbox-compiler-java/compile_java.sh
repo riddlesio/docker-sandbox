@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 # Find the main class
 MAIN=`find ${SOURCE_DIR} -name '*.java' -exec grep -lr 'public static void main' {} +`

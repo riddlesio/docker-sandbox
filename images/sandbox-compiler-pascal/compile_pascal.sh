@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 # Find Delphi or Lazarus project file
 MAIN=`find "$SOURCE_DIR" \( -name '*.dpr' -o -name '*.lpr' \) -not -path "./__MACOSX/*" | head -n 1`
@@ -6,7 +7,7 @@ MAIN=`find "$SOURCE_DIR" \( -name '*.dpr' -o -name '*.lpr' \) -not -path "./__MA
 if [ -z "$MAIN" ]
 then
 	# Find main Pascal file
-	MAIN=`grep -lr --include '*.pas' --include '*.p' --include '*.pp' '__main__' "$SOURCE_DIR"`
+	MAIN=`find "$SOURCE_DIR" -type f \( -iname \*.p -o -iname \*.pp -o -iname \*.pas \) | xargs grep -lr '__main__'`
 
 	if [ -z "$MAIN" ]
 	then

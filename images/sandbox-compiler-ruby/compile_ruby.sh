@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
+set -e
 
-MAIN=`grep -lr --include '*.rb' '#!/usr/bin/env ruby' "$SOURCE_DIR"`
+MAIN=`find "$SOURCE_DIR" -name '*.rb' | xargs grep -lr '#!/usr/bin/env ruby'`
 
 if [ -z "$MAIN" ]
 then

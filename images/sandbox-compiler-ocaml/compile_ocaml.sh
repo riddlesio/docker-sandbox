@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 (cd ${SOURCE_DIR} && ocamlbuild -lib unix -build-dir ${BIN_DIR} main.native)
 

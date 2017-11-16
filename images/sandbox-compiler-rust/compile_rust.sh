@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 CARGO=`find ${SOURCE_DIR} -name "Cargo.toml"`
 if [ -z "$CARGO" ]

@@ -10,6 +10,9 @@ then
 	exit 1
 fi
 
+# look into bin_dir ownership because its a mount
+rm -rf $BIN_DIR
+mkdir -p $BIN_DIR
 cp -r $SOURCE_DIR/* "$BIN_DIR"
 
 MAIN=${MAIN##$SOURCE_DIR/}

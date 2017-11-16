@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
+set -e
 
 # Find the main class
-MAIN=`grep -lr --include '*.lua' '#!/usr/bin/env lua' "$SOURCE_DIR"`
+MAIN=`find "$SOURCE_DIR" -name '*.lua' | xargs grep -lr '#!/usr/bin/env lua'`
 
 if [ -z "$MAIN" ]
 then
