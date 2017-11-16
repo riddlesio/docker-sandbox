@@ -36,8 +36,10 @@ from contextlib import contextmanager
 from util.subprocess import SubprocessRunner
 from util.temp_dir import temp_dir
 from util.test_utils import create_docker_compile_command
+from util.test_utils import create_docker_runtime_command
 from util.test_utils import compiler_image
 from util.test_utils import get_manifest_executable
+from util.test_utils import runtime_image
 
 FIXTURES = [
     'javascript',
@@ -60,12 +62,11 @@ def as_param(datum):
     return pytest.param(datum, marks=mark)
 
 @pytest.fixture(
-    autouse=True,
     ids=as_id,
     params=list(map(as_param, FIXTURES)),
     scope="module",
 )
-def setup(request):
+def compiler_setup(request):
     programming_language = request.param
     module_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -102,42 +103,46 @@ def setup(request):
 
         yield bin_dir, result
 
-
-@pytest.mark.compiler
-def test_succesful_return_code(setup):
-    _, result = setup
-    assert result.return_code == 0
-
-
-@pytest.mark.compiler
-def test_creates_manifest(setup):
-    bin_dir, _ = setup
-    manifest_path = os.path.join(bin_dir, 'manifest')
-    assert os.path.exists(manifest_path)
-
-
-@pytest.mark.compiler
-def test_creates_bot_executable(setup):
-    bin_dir, _ = setup
+@pytest.fixture(
+    ids=as_id,
+    params=list(map(as_param, FIXTURES)),
+    scope="module",
+)
+def runtime_result(compiler_setup, request, update_binaries):
+    bin_dir, result = compiler_setup
+    programming_language = request.param[0]
+    module_dir = os.path.dirname(os.path.realpath(__file__))
     manifest_path = os.path.join(bin_dir, 'manifest')
 
-    assert os.path.exists(
+    # Step 0: Update the bot binaries if the `--update-binaries` flag is passed
+    if result.return_code == 0 and update_binaries:
+        shutil.copytree(
+            bin_dir,
+            os.path.join(module_dir, 'bot_binaries/{}'.format(programming_language))
+        )
+
+    # Step 1: Run the runtime and get the output
+    command = create_docker_runtime_command(
+        bin_dir,
         get_manifest_executable(
             manifest_path,
             bin_dir,
-        )
+        ),
+        runtime_image(programming_language)
     )
+    result = SubprocessRunner().run('cat test_scenario.txt | ' + command)
 
+    if (result.return_code != 0):
+        print('===STDOUT===')
+        print(result.stdout)
+        print('===STDERR===')
+        print(result.stderr)
+
+    return result
 
 @pytest.mark.compiler
-def test_executable_permissions(setup):
-    bin_dir, _ = setup
-    manifest_path = os.path.join(bin_dir, 'manifest')
-    file_mode = os.stat(
-        get_manifest_executable(
-            manifest_path,
-            bin_dir,
-        )
-    ).st_mode
+def test_succesful_return_code(runtime_result):
+    assert runtime_result.return_code == 0
 
-    assert file_mode == 0o100755
+def test_bot_returns_correct_output(runtime_result):
+    assert runtime_result.stdout.strip() in ['rock', 'paper', 'scissors']
