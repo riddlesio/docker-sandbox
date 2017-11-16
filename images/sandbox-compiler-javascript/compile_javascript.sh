@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
+set -e
 
 # Find the main class
-MAIN=`grep -lr --include '*.js' '__main__' "$SOURCE_DIR"`
+MAIN=`find "$SOURCE_DIR" -name '*.js' | xargs grep -lr '__main__'`
 
 if [ -z "$MAIN" ]
 then
@@ -9,8 +10,7 @@ then
 	exit 1
 fi
 
-rm -rf "$BIN_DIR"
-cp -r "$SOURCE_DIR" "$BIN_DIR"
+cp -r $SOURCE_DIR/* "$BIN_DIR"
 
 MAIN=${MAIN##$SOURCE_DIR/}
 echo "$MAIN" > "$BIN_DIR/manifest"

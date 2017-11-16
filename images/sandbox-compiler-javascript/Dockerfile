@@ -6,4 +6,4 @@ WORKDIR /riddles
 
 COPY compile_javascript.sh /riddles/compile_javascript.sh
 
-CMD ["compile_javascript.sh"]
+CMD ["./compile_javascript.sh"]
