@@ -19,8 +19,8 @@ FIXTURES = [
 **Important**: This test suite makes several assumptions regarding
 naming conventions and the location of specific files:
 
-  - The bot source code should be a single file, located at
-    `docker-sandbox/test/bot_sources/<lowercase_programming_language_name>/<bot_file>`
+  - The bot source code should be located at
+    `docker-sandbox/test/bot_sources/<lowercase_programming_language_name>/`
   - The compiler image should be named as
     `gcr.io/riddles-microservices/sandbox-compiler-<lowercase_programming_language_name>`
 
@@ -40,8 +40,8 @@ from util.test_utils import compiler_image
 from util.test_utils import get_manifest_executable
 
 FIXTURES = [
-    ('javascript', 'basic_bot.js'),
-    ('php', 'basic_bot.php'),
+    ('javascript'),
+    ('php'),
 ]
 
 def as_id(datum):
@@ -50,7 +50,7 @@ def as_id(datum):
     # This function cannot return a value which is also
     # used as a marker. This screws up the test selection
     # for some reason.
-    return '{} - {}'.format(datum[0], datum[1])
+    return 'ProgrammingLanguage(slug={})'.format(datum[0])
 
 def as_param(datum):
     # Dynamically create a marker from fixture data,
@@ -79,12 +79,11 @@ def setup(request):
         source_dir = os.path.join(path, 'source')
         bin_dir = os.path.join(path, 'bin')
 
-        os.mkdir(source_dir)
         os.mkdir(bin_dir)
 
-        shutil.copyfile(
-            os.path.join(module_dir, 'bot_sources/{}/{}'.format(programming_language, bot_file)),
-            os.path.join(source_dir, bot_file)
+        shutil.copytree(
+            os.path.join(module_dir, 'bot_sources/{}'.format(programming_language)),
+            source_dir
         )
 
         # Step 2: Run the compiler and get the output
