@@ -1,3 +1,33 @@
+'''
+This module contains the necessary functionality to run
+basic compiler tests. In order to add a test for a specific
+compiler, add a tuple with the lowercase name of the programming
+language and the filename of the bot source code to the FIXTURES
+list.
+
+For example, to add a test for the python compiler, add the
+following:
+
+```
+FIXTURES = [
+    ...
+    ('python', 'basic_bot.py'),
+    ...
+]
+```
+
+**Important**: This test suite makes several assumptions regarding
+naming conventions and the location of specific files:
+
+  - The bot source code should be a single file, located at
+    `docker-sandbox/test/bot_sources/<lowercase_programming_language_name>/<bot_file>`
+  - The compiler image should be named as
+    `gcr.io/riddles-microservices/sandbox-compiler-<lowercase_programming_language_name>`
+
+A marker is generated for each programming language added to the
+test suite. This marker can be used to run a subset of the tests.
+See README.md for more info.
+'''
 import os
 import pytest
 import shutil
@@ -15,9 +45,17 @@ FIXTURES = [
 ]
 
 def as_id(datum):
+    # Important:
+    # 
+    # This function cannot return a value which is also
+    # used as a marker. This screws up the test selection
+    # for some reason.
     return '{} - {}'.format(datum[0], datum[1])
 
 def as_param(datum):
+    # Dynamically create a marker from fixture data,
+    # so it becomes possible to run the compiler tests
+    # for a subset of programming languages.
     mark = getattr(pytest.mark, datum[0])
     return pytest.param(datum, marks=mark)
 
