@@ -1,21 +1,26 @@
 from riddles.jarvis.steps.docker import get_latest_tag_for_commit_hash
 from riddles.jarvis.steps.git import get_latest_commit_hash
 
+
 def image(kind, language_shorthand):
     image = 'sandbox-{}-{}'.format(kind, language_shorthand)
 
     commit_hash = get_latest_commit_hash()
-    version = get_latest_tag_for_commit_hash(hash=commit_hash, microservice_name=image)
+    version = get_latest_tag_for_commit_hash(
+        hash=commit_hash, microservice_name=image)
 
     return 'gcr.io/riddles-microservices/{}:{}'.format(image, version)
+
 
 def compiler_image(language_shorthand):
     return image('compiler', language_shorthand)
 
-def runtime_image(language_shorthand, version):
+
+def runtime_image(language_shorthand):
     return image('runtime', language_shorthand)
 
-def create_docker_compile_command(self, source_dir, bin_dir, image) -> str:
+
+def create_docker_compile_command(source_dir, bin_dir, image) -> str:
     source_dir_host_path = source_dir
     source_dir_mount_point = '/tmp/riddles/compiler/source'
 
@@ -42,6 +47,7 @@ def create_docker_compile_command(self, source_dir, bin_dir, image) -> str:
         max_memory='200M',
         image=image
     )
+
 
 def create_docker_runtime_command(self, bot_dir, executable_filename, image) -> str:
     bot_dir_host_path = bin_dir

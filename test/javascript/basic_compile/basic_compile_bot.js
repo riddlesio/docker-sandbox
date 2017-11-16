@@ -3,6 +3,8 @@
 /**
  * Rock Paper Scissors JavaScript bot
  *
+ * __main__
+ *
  * Last update: June 17, 2016
  *
  * @author Niko van Meurs
