@@ -1,20 +1,6 @@
 '''
 This module contains the necessary functionality to run
-basic compiler tests. In order to add a test for a specific
-compiler, add a tuple with the lowercase name of the programming
-language and the filename of the bot source code to the FIXTURES
-list.
-
-For example, to add a test for the python compiler, add the
-following:
-
-```
-FIXTURES = [
-    ...
-    ('python', 'basic_bot.py'),
-    ...
-]
-```
+basic compiler tests.
 
 **Important**: This test suite makes several assumptions regarding
 naming conventions and the location of specific files:
@@ -31,42 +17,28 @@ See README.md for more info.
 import os
 import pytest
 import shutil
-from contextlib import contextmanager
 
+from test.config import PROGRAMMING_LANGUAGES
 from util.subprocess import SubprocessRunner
 from util.temp_dir import temp_dir
-from util.test_utils import create_docker_compile_command
-from util.test_utils import compiler_image
-from util.test_utils import get_manifest_executable
-
-FIXTURES = [
-    'javascript',
-    'php',
-]
-
-def as_id(datum):
-    # Important:
-    # 
-    # This function cannot return a value which is also
-    # used as a marker. This screws up the test selection
-    # for some reason.
-    return 'ProgrammingLanguage(slug={})'.format(datum)
-
-def as_param(datum):
-    # Dynamically create a marker from fixture data,
-    # so it becomes possible to run the compiler tests
-    # for a subset of programming languages.
-    mark = getattr(pytest.mark, datum)
-    return pytest.param(datum, marks=mark)
+from util.test_utils import (
+    as_id,
+    as_param,
+    create_docker_compile_command,
+    create_docker_runtime_command,
+    compiler_image,
+    get_manifest_executable,
+    runtime_image,
+)
 
 @pytest.fixture(
     autouse=True,
     ids=as_id,
-    params=list(map(as_param, FIXTURES)),
+    params=list(map(as_param, PROGRAMMING_LANGUAGES)),
     scope="module",
 )
-def setup(request):
-    programming_language = request.param
+def compile_result(request, update_binaries):
+    programming_language, runtime = request.param
     module_dir = os.path.dirname(os.path.realpath(__file__))
 
     # Note: all temp dirs should be created within `/tmp` instead of `/var`
@@ -94,50 +66,92 @@ def setup(request):
         )
         result = SubprocessRunner().run(command)
 
-        if (result.return_code != 0):
+        if result.return_code != 0:
             print('===STDOUT===')
             print(result.stdout)
             print('===STDERR===')
             print(result.stderr)
+        elif update_binaries:
+            binary_dir = os.path.join(
+                module_dir,
+                'bot_binaries/{}'.format(programming_language)
+            )
+            
+            if (os.path.exists(binary_dir)):
+                shutil.rmtree(binary_dir)
+            shutil.copytree(bin_dir, binary_dir)
 
-        yield bin_dir, result
+        yield bin_dir, result, programming_language, runtime
 
+
+@pytest.fixture(scope="module")
+def runtime_result(compile_result, update_binaries):
+    bin_dir, result, programming_language, runtime = compile_result
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    manifest_path = os.path.join(bin_dir, 'manifest')
+
+    # Step 1: Run the runtime and get the output
+    command = create_docker_runtime_command(
+        bin_dir,
+        runtime,
+        get_manifest_executable(manifest_path),
+        runtime_image(programming_language)
+    )
+    result = SubprocessRunner().run('cat test_scenario.txt | ' + command)
+
+    if (result.return_code != 0):
+        print('===STDOUT===')
+        print(result.stdout)
+        print('===STDERR===')
+        print(result.stderr)
+
+    return result
 
 @pytest.mark.compiler
-def test_succesful_return_code(setup):
-    _, result = setup
+def test_succesful_return_code(compile_result):
+    _, result, _, _ = compile_result
     assert result.return_code == 0
 
 
 @pytest.mark.compiler
-def test_creates_manifest(setup):
-    bin_dir, _ = setup
+def test_creates_manifest(compile_result):
+    bin_dir, _, _, _ = compile_result
     manifest_path = os.path.join(bin_dir, 'manifest')
     assert os.path.exists(manifest_path)
 
 
 @pytest.mark.compiler
-def test_creates_bot_executable(setup):
-    bin_dir, _ = setup
+def test_creates_bot_executable(compile_result):
+    bin_dir, _, _, _ = compile_result
     manifest_path = os.path.join(bin_dir, 'manifest')
 
     assert os.path.exists(
-        get_manifest_executable(
-            manifest_path,
-            bin_dir,
+        os.path.join(
+            bin_dir, 
+            get_manifest_executable(manifest_path),
         )
     )
 
 
 @pytest.mark.compiler
-def test_executable_permissions(setup):
-    bin_dir, _ = setup
+def test_executable_permissions(compile_result):
+    bin_dir, _, _, _ = compile_result
     manifest_path = os.path.join(bin_dir, 'manifest')
     file_mode = os.stat(
-        get_manifest_executable(
-            manifest_path,
-            bin_dir,
+        os.path.join(
+            bin_dir, 
+            get_manifest_executable(manifest_path),
         )
     ).st_mode
 
     assert file_mode == 0o100755
+
+@pytest.mark.compiler
+@pytest.mark.integration
+def test_succesful_return_code(runtime_result):
+    assert runtime_result.return_code == 0
+
+@pytest.mark.compiler
+@pytest.mark.integration
+def test_bot_returns_correct_output(runtime_result):
+    assert runtime_result.stdout.strip() in ['rock', 'paper', 'scissors']

@@ -3,6 +3,8 @@
 /**
  * Rock Paper Scissors JavaScript bot
  *
+ * __main__
+ *
  * Last update: June 17, 2016
  *
  * @author Niko van Meurs
@@ -12,7 +14,6 @@
 const createInterface = require('readline').createInterface;
 const in$ = process.stdin;
 const out$ = process.stdout;
-
 class Bot {
 
     handleClose() {
@@ -39,16 +40,14 @@ class Bot {
                     const random = Math.floor(Math.random() * possibleResponses.length);
                     this.out(`${possibleResponses[random]}`);
                     break;
-                case 'settings':
-                    process.stderr.write(parts[0] + '\n');
-                    break;
-                case 'update':
-                    process.stderr.write(parts[0] + '\n');
-                    break;
                 default:
-                    this.out(line);
+                    break;
             }
         }
+    }
+
+    error(message) {
+        error$.write(`${message}\n`);
     }
 
     out(message) {

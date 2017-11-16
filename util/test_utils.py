@@ -1,7 +1,22 @@
 import os
+import pytest
 from riddles.jarvis.steps.docker import get_latest_tag_for_commit_hash
 from riddles.jarvis.steps.git import get_latest_commit_hash
 
+def as_id(datum):
+    # Important:
+    # 
+    # This function cannot return a value which is also
+    # used as a marker. This screws up the test selection
+    # for some reason.
+    return 'ProgrammingLanguage(slug={})'.format(datum)
+
+def as_param(datum):
+    # Dynamically create a marker from fixture data,
+    # so it becomes possible to run the compiler tests
+    # for a subset of programming languages.
+    mark = getattr(pytest.mark, datum[0])
+    return pytest.param(datum, marks=mark)
 
 def image(kind, language_shorthand):
     image = 'sandbox-{}-{}'.format(kind, language_shorthand)
@@ -50,22 +65,27 @@ def create_docker_compile_command(source_dir, bin_dir, image) -> str:
     )
 
 
-def create_docker_runtime_command(self, bot_dir, executable_filename, image) -> str:
-    bot_dir_host_path = bin_dir
+def create_docker_runtime_command(bot_dir, cmd, executable_filename, image) -> str:
+    bot_dir_host_path = bot_dir
     bot_dir_mount_point = '/bot'
 
     return (
         'docker run '
+        '-a STDIN '
+        '-a STDOUT '
+        '-a STDERR '
+        '-i '
         '-c {cpu_shares} '
         '-m {max_memory} '
         # Mount bot_dir as read-only
         '-v {bot_dir_host_path}:{bot_dir_mount_point}:ro '
         '--net none '
         '{image} '
-        '{bot_dir_mount_point}/{executable_filename}'
+        '{cmd} {bot_dir_mount_point}/{executable_filename}'
     ).format(
         bot_dir_host_path=bot_dir_host_path,
         bot_dir_mount_point=bot_dir_mount_point,
+        cmd=cmd,
         cpu_shares=512,
         executable_filename=executable_filename,
         max_memory='200M',
@@ -73,7 +93,7 @@ def create_docker_runtime_command(self, bot_dir, executable_filename, image) -> 
     )
 
 
-def get_manifest_executable(manifest_path, bin_dir):
+def get_manifest_executable(manifest_path):
     with open(manifest_path) as manifest:
         data = manifest.read()
-        return os.path.join(bin_dir, data.strip())
+        return data.strip()

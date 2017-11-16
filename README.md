@@ -66,6 +66,36 @@ bin/sandbox-scripts test ocaml or reason
 **Important**: Running the test suite requires that the sandbox
 images have been built and are available on your local machine.
 
+### Adding tests to the test suite
+
+#### Tests for new compiler or runtime implementations
+
+All that's needed to add tests for new implementations is
+a simple mutation of the `test/config.py` file.
+
+The config file contains a list of tuples consisting of the
+slug of the programming language and the command required
+to execute a binary/script.
+
+Adding support for a language, say Java, is as simple as
+adding the following to the list:
+
+```
+('java', 'java -jar')
+```
+
+#### Testing for specific cases
+
+When testing for edge cases, specific language features or implementation
+details, extra tests can be added to a sub folder in the `test` folder.
+All files prefixed with `test_` and ending in `.py` will be recognised
+as valid tests.
+
+Note that these tests should be marked according to the programming
+language being tested and whether the test targets the compiler or
+the runtime. Furthermore, all added files, folders and tests should
+have a unique name.
+
 ## Contributions
 
 This repository uses the Github branching model with the following
@@ -78,4 +108,5 @@ The master branch is closed for writing, contributions should be
 submitted through a pull request from a feature branch.
 
 Each pull request must describe the changes made and why these changes
-are necessary (for future reference).
+are necessary (for future reference) or reference an issue which does
+so.
