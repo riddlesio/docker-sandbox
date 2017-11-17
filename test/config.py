@@ -10,6 +10,7 @@ and the runtime which should execute the binary.
 '''
 
 PROGRAMMING_LANGUAGES = [
+    ('c', None),
     ('cs', 'mono'),
     ('haskell', None),
     ('java', 'java -jar'),
