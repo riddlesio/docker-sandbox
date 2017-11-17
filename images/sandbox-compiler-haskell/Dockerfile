@@ -12,6 +12,9 @@ RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles
 WORKDIR /riddles
 
+ENV HI_DIR="/tmp/riddles/compiler/hi"
+RUN mkdir ${HI_DIR}
+
 COPY compile_haskell.sh /riddles/compile_haskell.sh
 
 CMD ["./compile_haskell.sh"]

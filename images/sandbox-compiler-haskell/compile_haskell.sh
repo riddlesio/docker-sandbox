@@ -10,7 +10,7 @@ then
 fi
 
 #ghc -O2 --make -static -optc-static -optl-static "$MAIN" -optl-pthread -o "$BIN_DIR/run_ai" -idir:"$SOURCE_DIR"
-ghc -O2 --make "$MAIN" -optl-pthread -o "$BIN_DIR/run_ai" -odir "$BIN_DIR" -idir "$SOURCE_DIR"
+ghc -O2 --make "$MAIN" -optl-pthread -o "$BIN_DIR/run_ai" -odir:"$BIN_DIR" -idir:"$SOURCE_DIR" -hidir:"$HI_DIR"
 
 if [ $? -gt 0 ]
 then

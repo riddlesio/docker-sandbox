@@ -5,10 +5,10 @@ import System.Random
 
 randomRPS = do
   randInt <- randomRIO (0, 3 :: Int)
-  if randInt == 0 then do putStrLn "Rock";
+  if randInt == 0 then do putStrLn "rock";
   else do
-    if randInt == 1 then do putStrLn "Paper";
-    else do putStrLn "Scissors"
+    if randInt == 1 then do putStrLn "paper";
+    else do putStrLn "scissors"
 
 process (x:xs) = do
   case x of

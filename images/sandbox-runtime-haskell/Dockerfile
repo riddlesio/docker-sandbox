@@ -38,4 +38,5 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
 
 RUN apk update && \
     apk add --no-cache libgmpxx && \
+    apk add --no-cache libffi && \
     rm -rf /var/cache/apk/*
