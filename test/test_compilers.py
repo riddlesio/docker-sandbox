@@ -97,6 +97,8 @@ def runtime_result(compile_result, update_binaries):
         get_manifest_executable(manifest_path),
         runtime_image(programming_language)
     )
+
+    print(command)
     result = SubprocessRunner().run('cat test_scenario.txt | ' + command)
 
     if (result.return_code != 0):
