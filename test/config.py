@@ -13,6 +13,7 @@ PROGRAMMING_LANGUAGES = [
     ('c', None),
     ('cpp', None),
     ('cs', 'mono'),
+    ('go', None),
     ('haskell', None),
     ('java', 'java -jar'),
     ('javascript', 'node'),
