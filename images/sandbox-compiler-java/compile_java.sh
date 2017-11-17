@@ -39,4 +39,6 @@ ls | grep -v *.jar | xargs rm -rf
 
 cd "$CURRENT_DIR"
 
+chmod -R +rx $BIN_DIR
+
 echo "run_ai.jar" > "$BIN_DIR/manifest"

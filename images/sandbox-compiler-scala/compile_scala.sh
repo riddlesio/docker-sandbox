@@ -17,4 +17,6 @@ then
 	exit 1
 fi
 
+chmod -R +rx $BIN_DIR
+
 echo "run_ai.jar" > "$BIN_DIR/manifest"

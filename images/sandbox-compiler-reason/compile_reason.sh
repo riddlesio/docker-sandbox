@@ -8,4 +8,6 @@ then
 	exit 1
 fi
 
+chmod -R +rx $BIN_DIR
+
 echo "main.native" > "$BIN_DIR/manifest"

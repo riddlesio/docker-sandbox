@@ -22,4 +22,6 @@ EXE=`echo ${EXE} | sed 's/^"\(.*\)"$/\1/'`
 FULLPATH=`find ${SOURCE_DIR} -name "$EXE"`
 mv ${FULLPATH} ${BIN_DIR}
 
+chmod -R +rx $BIN_DIR
+
 echo "$EXE" > "$BIN_DIR/manifest"

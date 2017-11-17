@@ -29,4 +29,6 @@ then
 	exit 1
 fi
 
+chmod -R +rx $BIN_DIR
+
 echo "$MAINFILE" > "$BIN_DIR/manifest"

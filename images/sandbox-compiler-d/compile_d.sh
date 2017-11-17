@@ -11,4 +11,6 @@ then
 	exit 1
 fi
 
+chmod -R +rx $BIN_DIR
+
 echo "run_ai" > "$BIN_DIR/manifest"
