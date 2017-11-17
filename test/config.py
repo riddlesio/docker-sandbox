@@ -10,10 +10,11 @@ and the runtime which should execute the binary.
 '''
 
 PROGRAMMING_LANGUAGES = [
-    # ('cs', 'sh'),
+    # ('cs', None),
     ('javascript', 'node'),
     ('lua', 'lua'),
     ('pascal', None),
     ('php', 'php'),
     ('python3', 'python3'),
+    ('scala', 'scala'),
 ]
