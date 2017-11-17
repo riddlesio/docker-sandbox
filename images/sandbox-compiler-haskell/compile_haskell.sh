@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-MAIN=`find "$SOURCE_DIR" -name '*.hs' | xargs grep -elr 'main=|main ='`
+MAIN=`find "$SOURCE_DIR" -name '*.hs' | xargs grep -Elr 'main=|main ='`
 
 if [ -z "$MAIN" ]
 then
