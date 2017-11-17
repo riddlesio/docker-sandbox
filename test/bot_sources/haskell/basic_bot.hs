@@ -16,11 +16,9 @@ process (x:xs) = do
     _        -> return ()
 
 loop = do
-    maybeLine <- readline "% "
-    case maybeLine of
-      Nothing   -> return () -- EOF / control-d
-      Just line -> do
-        process (words line)
-        loop
+    line <- getLine
+    process (words line)
+    eof <- isEOF
+    unless eof loop
 
 main = loop
