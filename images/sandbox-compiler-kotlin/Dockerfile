@@ -20,4 +20,4 @@ WORKDIR /riddles
 
 COPY compile_kotlin.sh /riddles/compile_kotlin.sh
 
-CMD ["compile_kotlin.sh"]
+CMD ["./compile_kotlin.sh"]

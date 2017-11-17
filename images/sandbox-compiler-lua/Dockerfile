@@ -6,4 +6,4 @@ WORKDIR /riddles
 
 COPY compile_lua.sh /riddles/compile_lua.sh
 
-CMD ["compile_lua.sh"]
+CMD ["./compile_lua.sh"]

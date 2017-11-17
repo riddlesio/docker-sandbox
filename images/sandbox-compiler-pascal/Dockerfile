@@ -29,4 +29,4 @@ WORKDIR /riddles
 
 COPY compile_pascal.sh /riddles/compile_pascal.sh
 
-CMD ["compile_pascal.sh"]
+CMD ["./compile_pascal.sh"]

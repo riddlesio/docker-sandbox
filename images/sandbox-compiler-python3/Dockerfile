@@ -6,4 +6,4 @@ WORKDIR /riddles
 
 COPY compile_python3.sh /riddles/compile_python3.sh
 
-CMD ["compile_python3.sh"]
+CMD ["./compile_python3.sh"]

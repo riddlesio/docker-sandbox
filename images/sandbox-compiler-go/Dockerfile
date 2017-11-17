@@ -6,4 +6,4 @@ WORKDIR /riddles
 
 COPY compile_go.sh /riddles/compile_go.sh
 
-CMD ["compile_go.sh"]
+CMD ["./compile_go.sh"]

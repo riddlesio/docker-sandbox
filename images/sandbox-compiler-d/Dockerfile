@@ -21,4 +21,4 @@ WORKDIR /riddles
 
 COPY compile_d.sh /riddles/compile_d.sh
 
-CMD ["/compile_d.sh"]
+CMD ["./compile_d.sh"]

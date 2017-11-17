@@ -11,4 +11,4 @@ WORKDIR /riddles
 
 COPY compile_cs.sh /riddles/compile_cs.sh
 
-CMD ["/compile_cs.sh"]
+CMD ["./compile_cs.sh"]

@@ -23,4 +23,4 @@ WORKDIR /riddles
 
 COPY compile_java.sh /riddles/compile_java.sh
 
-CMD ["compile_java.sh"]
+CMD ["./compile_java.sh"]

@@ -26,4 +26,4 @@ WORKDIR /riddles
 
 COPY compile_rust.sh /riddles/compile_rust.sh
 
-CMD ["compile_rust.sh"]
+CMD ["./compile_rust.sh"]

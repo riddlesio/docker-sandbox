@@ -52,4 +52,4 @@ WORKDIR /riddles
 
 COPY compile_reason.sh /riddles/compile_reason.sh
 
-CMD ["compile_reason.sh"]
+CMD ["./compile_reason.sh"]

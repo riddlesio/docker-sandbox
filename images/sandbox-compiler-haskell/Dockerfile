@@ -14,4 +14,4 @@ WORKDIR /riddles
 
 COPY compile_haskell.sh /riddles/compile_haskell.sh
 
-CMD ["compile_haskell.sh"]
+CMD ["./compile_haskell.sh"]

@@ -17,4 +17,4 @@ WORKDIR /riddles
 
 COPY compile_ocaml.sh /riddles/compile_ocaml.sh
 
-CMD ["compile_ocaml.sh"]
+CMD ["./compile_ocaml.sh"]

@@ -6,4 +6,4 @@ WORKDIR /riddles
 
 COPY compile_elixir.sh /riddles/compile_elixir.sh
 
-CMD ["compile_elixir.sh"]
+CMD ["./compile_elixir.sh"]

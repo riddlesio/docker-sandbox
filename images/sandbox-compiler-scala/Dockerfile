@@ -40,4 +40,4 @@ WORKDIR /riddles
 
 COPY compile_scala.sh /riddles/compile_scala.sh
 
-CMD ["compile_scala.sh"]
+CMD ["./compile_scala.sh"]
