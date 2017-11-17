@@ -10,8 +10,8 @@ then
 	exit 1
 fi
 
-rm -rf "$BIN_DIR"
-cp -r "$SOURCE_DIR" "$BIN_DIR"
+cp -r $SOURCE_DIR/* "$BIN_DIR"
+chmod -R +rx $BIN_DIR
 
 MAIN=${MAIN##$SOURCE_DIR/}
 echo "$MAIN" > "$BIN_DIR/manifest"
