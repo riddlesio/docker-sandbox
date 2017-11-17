@@ -16,6 +16,7 @@ PROGRAMMING_LANGUAGES = [
     ('haskell', None),
     ('java', 'java -jar'),
     ('javascript', 'node'),
+    ('kotlin', 'java -jar'),
     ('lua', 'lua'),
     ('pascal', None),
     ('php', 'php'),
