@@ -12,6 +12,7 @@ and the runtime which should execute the binary.
 PROGRAMMING_LANGUAGES = [
     # ('cs', None),
     ('haskell', None),
+    ('java', 'java -jar'),
     ('javascript', 'node'),
     ('lua', 'lua'),
     ('pascal', None),
