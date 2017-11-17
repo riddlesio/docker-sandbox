@@ -13,6 +13,7 @@ PROGRAMMING_LANGUAGES = [
     # ('cs', 'sh'),
     ('javascript', 'node'),
     ('lua', 'lua'),
+    ('pascal', None),
     ('php', 'php'),
     ('python3', 'python3'),
 ]
