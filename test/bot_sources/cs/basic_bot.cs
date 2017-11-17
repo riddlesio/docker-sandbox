@@ -4,9 +4,10 @@ using System.IO;
 
 class Program {
     static void Main() {
+        string line;
 
         do {
-            string line = Console.ReadLine();
+            line = Console.ReadLine();
             string[] words = line.Split(' ');
 
             if (words.Length == 0) {
@@ -28,6 +29,6 @@ class Program {
                 }
             }
 
-        } while (line !== null);
+        } while (line != null);
     }
 }

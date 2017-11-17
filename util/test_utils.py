@@ -65,9 +65,21 @@ def create_docker_compile_command(source_dir, bin_dir, image) -> str:
     )
 
 
-def create_docker_runtime_command(bot_dir, cmd, executable_filename, image) -> str:
+def create_docker_runtime_command(bot_dir, runtime, executable_filename, image) -> str:
     bot_dir_host_path = bot_dir
     bot_dir_mount_point = '/bot'
+
+    if runtime is None:
+        cmd = '{bot_dir_mount_point}/{executable_filename}'.format(
+            bot_dir_mount_point=bot_dir_mount_point,
+            executable_filename=executable_filename,
+        )
+    else:
+        cmd = '{runtime} {bot_dir_mount_point}/{executable_filename}'.format(
+            bot_dir_mount_point=bot_dir_mount_point,
+            executable_filename=executable_filename,
+            runtime=runtime,
+        )
 
     return (
         'docker run '
@@ -81,13 +93,12 @@ def create_docker_runtime_command(bot_dir, cmd, executable_filename, image) -> s
         '-v {bot_dir_host_path}:{bot_dir_mount_point}:ro '
         '--net none '
         '{image} '
-        '{cmd} {bot_dir_mount_point}/{executable_filename}'
+        '{cmd}'
     ).format(
         bot_dir_host_path=bot_dir_host_path,
         bot_dir_mount_point=bot_dir_mount_point,
         cmd=cmd,
         cpu_shares=512,
-        executable_filename=executable_filename,
         max_memory='200M',
         image=image
     )

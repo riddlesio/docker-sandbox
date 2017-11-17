@@ -10,7 +10,7 @@ and the runtime which should execute the binary.
 '''
 
 PROGRAMMING_LANGUAGES = [
-    ('cs', ''),
+    ('cs', None),
     ('javascript', 'node'),
     ('php', 'php')
 ]
