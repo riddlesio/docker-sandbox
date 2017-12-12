@@ -22,5 +22,6 @@ PROGRAMMING_LANGUAGES = [
     ('pascal', None),
     ('php', 'php'),
     ('python3', 'python3'),
+    ('ruby', 'ruby'),
     ('scala', 'scala'),
 ]
