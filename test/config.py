@@ -20,6 +20,7 @@ PROGRAMMING_LANGUAGES = [
     ('javascript', 'node'),
     ('kotlin', 'java -jar'),
     ('lua', 'lua'),
+    ('ocaml', None),
     ('pascal', None),
     ('php', 'php'),
     ('python3', 'python3'),
