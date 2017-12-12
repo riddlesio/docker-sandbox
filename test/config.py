@@ -26,5 +26,7 @@ PROGRAMMING_LANGUAGES = [
     ('php', 'php'),
     ('python3', 'python3'),
     ('reason', None),
+    ('ruby', 'ruby'),
+    ('rust', None),
     ('scala', 'scala'),
 ]

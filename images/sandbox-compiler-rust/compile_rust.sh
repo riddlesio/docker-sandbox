@@ -8,7 +8,10 @@ then
 	exit 1
 fi
 
-(cd ${SOURCE_DIR};cargo build --release)
+BUILD_DIR="/tmp/riddles/compiler/build"
+cp -R $SOURCE_DIR $BUILD_DIR
+
+(cd ${BUILD_DIR};cargo build --release)
 
 if [ $? -gt 0 ]
 then
@@ -19,7 +22,7 @@ fi
 EXE=`grep "name =" "$CARGO" | cut -d " " -f3`
 EXE=`echo ${EXE} | sed 's/^"\(.*\)"$/\1/'`
 
-FULLPATH=`find ${SOURCE_DIR} -name "$EXE"`
+FULLPATH=`find ${BUILD_DIR} -name "$EXE"`
 mv ${FULLPATH} ${BIN_DIR}
 
 chmod -R +rx $BIN_DIR
