@@ -1,0 +1,10 @@
+### Starting build.
+# Target: main.ml.depends, tags: { extension:re, file:main.re, ocaml, ocamldep, quiet }
+/usr/lib/node_modules/reason-cli/r/3__________________________________________________/i/ocaml-4.2.3001-f71e40d4/bin/ocamldep.opt -modules -pp 'refmt --print binary' -impl main.re | tee main.re.depends > main.ml.depends
+# Target: main.cmo, tags: { byte, compile, extension:cmo, extension:re, file:main.cmo, file:main.re, implem, ocaml, quiet }
+/usr/lib/node_modules/reason-cli/r/3__________________________________________________/i/ocaml-4.2.3001-f71e40d4/bin/ocamlc.opt -c -pp 'refmt --print binary' -o main.cmo -intf-suffix .rei -impl main.re
+# Target: main.cmx, tags: { compile, extension:cmx, extension:re, file:main.cmx, file:main.re, implem, native, ocaml, quiet }
+/usr/lib/node_modules/reason-cli/r/3__________________________________________________/i/ocaml-4.2.3001-f71e40d4/bin/ocamlopt.opt -c -pp 'refmt --print binary' -o main.cmx -intf-suffix .rei -impl main.re
+# Target: main.native, tags: { dont_link_with, extension:native, file:main.native, link, native, ocaml, program, quiet }
+/usr/lib/node_modules/reason-cli/r/3__________________________________________________/i/ocaml-4.2.3001-f71e40d4/bin/ocamlopt.opt unix.cmxa main.cmx -o main.native
+# Compilation successful.

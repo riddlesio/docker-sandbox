@@ -1,55 +1,100 @@
-# Sandbox Docker Image
+# Sandbox Docker Images
 
-This repository contains the sandbox docker image used by all
-microservices.
+This repository contains the sandbox images used by the match runner. There is a compiler, as well as a runtime image
+for each supported programming language.
 
 ## Usage
 
-This guide assumes the user has the Google Cloud SDK with beta
-components and kubectl, as well as Jarvis installed.
+This guide assumes the user has python3 with access to the Riddles.io pypi server as well as the Google Cloud SDK with
+beta components and kubectl installed.
 
-### Building the container
+When running the scripts for the first time, ensure all dependencies are installed correctly by running the following
+command:
 
-Jarvis is used to build the container. You can build the container
-by running the following command:
 ```
-jarvis build image sandbox
-```
-
-To force a build on a dirty working tree:
-```
-jarvis force build image sandbox
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install -r requirements/requirements.txt
 ```
 
-### Publishing the container
+Next time you open your terminal, do not forget to activate your virtual environment by running `source .venv/bin/activate` after changing dir into docker-sandbox.
 
-Jarvis can also be used to publish the container to the
-Google Container Registry.
+### Building the containers
 
-Run the following command to publish the container:
+To build the containers, run following command:
+
 ```
-jarvis publish image sandbox
-```
-
-Note that you cannot publish a container which has been built using the
-force flag.
-
-### Using the Docker image
-
-This docker image is used by the match-runner. It spins up this image
-each time a game needs to run. In the matchrunner configuration (.env
-locally or in a deployment on k8s) you need to make sure that the
-following variables are properly set:
-```
-SANDBOX_CONTAINER_NAME=sandbox
-SANDBOX_CONTAINER_VERSION=df9eb17
+bin/sandbox-scripts build
 ```
 
-The sandbox container version is a docker image tag, which is based on
-the commit hash of the commit the image was built for.
-Instead of a commit hash you can also use ```latest```, but this is not
-recommended to use because when a new image will be pushed, you can no
-longer easily see that latest is now the previous version.
+### Publishing one or all containers
+
+The script can also be used to publish the container to the Google Container Registry.
+
+Run the following command to build and publish a specific container:
+
+```
+bin/sandbox-scripts publish <container_name>
+```
+
+In order to publish all containers, run the following command instead:
+
+```
+bin/sandbox-scripts publish all
+```
+
+### Running the test suite
+
+The test suite can be invoked through the following command:
+```
+bin/sandbox-scripts test
+```
+
+This runs the test suite in its intirety. Markers can be added if
+you want to run only a subset of tests. For instance, running the
+tests for the Java compiler can be done as follows:
+```
+bin/sandbox-scripts test java and compiler
+```
+
+Similarly, running tests for both the OCaml and Reason compilers
+and runtimes can be done as follows:
+```
+bin/sandbox-scripts test ocaml or reason
+```
+
+**Important**: Running the test suite requires that the sandbox
+images have been built and are available on your local machine.
+
+### Adding tests to the test suite
+
+#### Tests for new compiler or runtime implementations
+
+All that's needed to add tests for new implementations is
+a simple mutation of the `test/config.py` file.
+
+The config file contains a list of tuples consisting of the
+slug of the programming language and the command required
+to execute a binary/script.
+
+Adding support for a language, say Java, is as simple as
+adding the following to the list:
+
+```
+('java', 'java -jar')
+```
+
+#### Testing for specific cases
+
+When testing for edge cases, specific language features or implementation
+details, extra tests can be added to a sub folder in the `test` folder.
+All files prefixed with `test_` and ending in `.py` will be recognised
+as valid tests.
+
+Note that these tests should be marked according to the programming
+language being tested and whether the test targets the compiler or
+the runtime. Furthermore, all added files, folders and tests should
+have a unique name.
 
 ## Contributions
 
@@ -63,4 +108,5 @@ The master branch is closed for writing, contributions should be
 submitted through a pull request from a feature branch.
 
 Each pull request must describe the changes made and why these changes
-are necessary (for future reference).
+are necessary (for future reference) or reference an issue which does
+so.

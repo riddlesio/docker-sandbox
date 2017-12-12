@@ -1,0 +1,5 @@
+"Resource: /tmp/riddles/compiler/source/main.ml": "\168\172\235\139;>\146\190\182\161\251fP\136\148'"
+"Rule: ocaml: ml & cmi -> cmx & o (%=main )": "R\016p\186\001\184FCH34\142\197{B\021"
+"Rule: ocaml: ml -> cmo & cmi (%=main )": "\134\152\024\162\023\156\237ki=\019\188\151\206y@"
+"Rule: ocaml dependencies ml (%=main )": "\007E\179d\140\1336`\164\219\227O8\209\215\250"
+"Rule: ocaml: cmx* & o* -> native (%=main )": "\245\236T\224~\189%\005p\199D\019\237w=\222"

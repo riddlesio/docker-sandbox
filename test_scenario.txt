@@ -1,0 +1,4 @@
+settings your_bot player0
+update game round 1
+update game living_players 0,4,5,8,23
+action move
