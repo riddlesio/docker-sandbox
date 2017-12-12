@@ -12,7 +12,7 @@ When running the scripts for the first time, ensure all dependencies are install
 command:
 
 ```
-python3 -m venv ..venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements/requirements.txt
 ```
@@ -51,7 +51,7 @@ bin/sandbox-scripts test
 ```
 
 This runs the test suite in its intirety. Markers can be added if
-you want to run only a subset of tests. For instance, runnint the
+you want to run only a subset of tests. For instance, running the
 tests for the Java compiler can be done as follows:
 ```
 bin/sandbox-scripts test java and compiler
