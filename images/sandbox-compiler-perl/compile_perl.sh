@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 set -e
 
-MAIN=`grep -lr --include '*.pl' --include '*.plx' '#!/usr/bin/env perl' "$SOURCE_DIR"`
 MAIN=`find "$SOURCE_DIR" -type f \( -iname \*.pl -o -iname \*.plx \) | xargs grep -lr '#!/usr/bin/env perl'`
 
 if [ -z "$MAIN" ]

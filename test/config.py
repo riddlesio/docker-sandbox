@@ -22,6 +22,7 @@ PROGRAMMING_LANGUAGES = [
     ('lua', 'lua'),
     ('ocaml', None),
     ('pascal', None),
+    ('perl', 'perl'),
     ('php', 'php'),
     ('python3', 'python3'),
     ('scala', 'scala'),
