@@ -1,6 +1,9 @@
 .idea
+.venv
 .vscode
 reports
+scripts
+test
 
 ### OSX template
 *.DS_Store
