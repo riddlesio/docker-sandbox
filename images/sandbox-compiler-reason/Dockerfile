@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM ubuntu:16.04
 
 # TODO: get this to work on alpine
 
@@ -27,7 +27,7 @@ RUN cd /tmp && \
     npm install -g npm@$NPM_VERSION && \
     apt-get remove -y curl
 
-ENV OCAML_VERSION 4.02.3
+ENV OCAML_VERSION 4.04.1
 RUN cd /tmp && \
     apt-get install -y wget patch ocaml unzip m4 make aspcud && \
     wget 'https://raw.github.com/ocaml/opam/master/shell/opam_installer.sh' -O - | sh -s /usr/local/bin && \
@@ -37,9 +37,9 @@ RUN cd /tmp && \
     opam update && \
     apt-get remove -y wget
 
-ENV REASON_VERSION 1.13.6
+ENV REASON_VERSION 3.0.1
 RUN apt-get update && \
-    npm install -g https://github.com/reasonml/reason-cli/archive/beta-v-$REASON_VERSION-bin-linux.tar.gz && \
+    npm install -g https://github.com/reasonml/reason-cli/archive/$REASON_VERSION-bin-linux.tar.gz && \
     npm cache clean && \
     \
     # uninstall node & npm
