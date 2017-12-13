@@ -1,9 +1,6 @@
 #!/usr/bin/env sh
 set -e
 
-rm -rf $BIN_DIR
-mkdir $BIN_DIR
-
 MAIN=`find "$SOURCE_DIR" -name '*.ex' | xargs grep -lr 'def main'`
 
 if [ -z "$MAIN" ]
