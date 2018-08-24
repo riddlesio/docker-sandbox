@@ -1,7 +1,7 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
-ENV JAVA_VERSION 8u131
-ENV JAVA_ALPINE_VERSION 8.131.11-r2
+ENV JAVA_VERSION 8u171
+ENV JAVA_ALPINE_VERSION 8.171.11-r0
 RUN { \
 		echo '#!/bin/sh'; \
 		echo 'set -e'; \

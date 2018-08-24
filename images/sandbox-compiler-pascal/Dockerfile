@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 # https://hub.docker.com/r/frolvlad/alpine-fpc/~/dockerfile/
 

@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 ENV LUA_VERSION 5.3
 RUN apk update && \

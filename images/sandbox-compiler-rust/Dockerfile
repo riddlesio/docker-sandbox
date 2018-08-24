@@ -1,7 +1,7 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
-ENV RUST_VERSION 1.17.0-r2
-ENV CARGO_VERSION 0.18.0-r0
+ENV RUST_VERSION 1.26.2-r0
+ENV CARGO_VERSION 1.26.2-r0
 RUN apk update && \
     apk add --no-cache gcc rust=${RUST_VERSION} cargo=${CARGO_VERSION} && \
     rm -rf /var/cache/apk/*

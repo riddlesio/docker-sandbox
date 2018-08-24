@@ -1,1 +1,1 @@
-FROM openjdk:8u131-jre-alpine
+FROM openjdk:8u171-jre-alpine

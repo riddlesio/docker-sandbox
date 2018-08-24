@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 RUN mkdir -p /tmp/riddles/compiler
 RUN mkdir /riddles

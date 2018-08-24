@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 ENV OCAML_VERSION 4.04.1
 RUN apk update && \

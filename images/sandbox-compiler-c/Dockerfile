@@ -1,7 +1,7 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 # https://pkgs.alpinelinux.org/packages?name=gcc&branch=&repo=&arch=&maintainer=
-ENV GCC_VERSION 6.3.0-r4
+ENV GCC_VERSION 6.4.0-r8
 
 RUN apk update && \
     apk add --no-cache gcc=$GCC_VERSION musl-dev && \

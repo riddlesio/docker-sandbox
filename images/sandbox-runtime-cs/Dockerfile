@@ -1,6 +1,6 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 # https://pkgs.alpinelinux.org/packages?name=mono&branch=&repo=&arch=&maintainer=
-ENV MONO_VERSION 5.2.0.224-r0
+ENV MONO_VERSION 5.10.0.179-r0
 RUN apk add mono=$MONO_VERSION --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted && \
     rm -rf /var/cache/apk/*
